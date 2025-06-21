@@ -1,0 +1,66 @@
+{
+  "name": "arxiv-research-pilot",
+  "version": "1.0.0",
+  "description": "An all-in-one research paper explorer, presenter, and AI assistant for researchers",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "build": "echo 'No build step required for this project'",
+    "deploy": "npm start",
+    "test": "echo 'No tests specified' && exit 0",
+    "lint": "echo 'No linting configured' && exit 0",
+    "clean": "rm -rf node_modules package-lock.json",
+    "install-deps": "npm install",
+    "setup": "npm install && mkdir -p cache/papers audio",
+    "heroku-postbuild": "echo 'Build completed'",
+    "generate-icons": "node scripts/generate-icons.js",
+    "pwa-setup": "npm run generate-icons && echo 'PWA setup complete!'"
+  },
+  "keywords": [
+    "arxiv",
+    "research",
+    "papers",
+    "ai",
+    "machine-learning",
+    "academic",
+    "pdf",
+    "text-to-speech",
+    "classroom",
+    "education"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/arxiv-research-pilot.git"
+  },
+  "homepage": "https://github.com/yourusername/arxiv-research-pilot#readme",
+  "bugs": {
+    "url": "https://github.com/yourusername/arxiv-research-pilot/issues"
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "axios": "^1.6.0",
+    "xml2js": "^0.6.2",
+    "cors": "^2.8.5",
+    "pdf-parse": "^1.1.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "optionalDependencies": {},
+  "os": [
+    "linux",
+    "darwin",
+    "win32"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ]
+}

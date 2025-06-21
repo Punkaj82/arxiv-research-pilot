@@ -1,0 +1,1804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Arxiv Research Pilot</title>
+  
+  <!-- PWA Meta Tags -->
+  <meta name="description" content="An all-in-one research paper explorer, presenter, and AI assistant for researchers">
+  <meta name="keywords" content="arxiv, research, papers, ai, machine learning, academic, pdf, text-to-speech">
+  <meta name="author" content="Your Name">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#667eea">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Arxiv Research Pilot">
+  
+  <!-- Apple Touch Icons -->
+  <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180x180.png">
+  <link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-167x167.png">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+  
+  <!-- Fonts and Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  
+  <!-- PDF.js for PDF processing -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.min.js"></script>
+  <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.worker.min.js';
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      margin: 0;
+      color: #222;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 16px 64px 16px;
+    }
+    .header {
+      text-align: center;
+      color: #fff;
+      margin-bottom: 32px;
+    }
+    .header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      letter-spacing: 1px;
+    }
+    .header .subtitle {
+      font-size: 1.2rem;
+      opacity: 0.9;
+      margin-bottom: 0.5rem;
+    }
+    .mode-selector {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+      max-width: 100%;
+    }
+    .mode-btn {
+      background: #fff;
+      border: 2px solid #667eea;
+      color: #667eea;
+      border-radius: 10px;
+      padding: 1rem 0.8rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      text-align: center;
+      min-height: 80px;
+      justify-content: center;
+      word-wrap: break-word;
+      line-height: 1.3;
+    }
+    .mode-btn.active, .mode-btn:hover {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      border-color: #764ba2;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102,126,234,0.2);
+    }
+    .mode-btn i {
+      font-size: 1.2rem;
+      margin-bottom: 0.3rem;
+    }
+    .search-section {
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 2rem;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+    .search-controls {
+      display: flex;
+      gap: 1.2rem;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      min-width: 180px;
+    }
+    .input-group label {
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+      color: #555;
+    }
+    .form-control {
+      padding: 10px 14px;
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 2px rgba(102,126,234,0.08);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 22px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: box-shadow 0.2s, transform 0.2s;
+      box-shadow: 0 2px 8px rgba(102,126,234,0.08);
+    }
+    .btn-primary:hover {
+      box-shadow: 0 6px 18px rgba(102,126,234,0.18);
+      transform: translateY(-2px);
+    }
+    .results-section {
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 2rem;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+    }
+    .papers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 18px;
+    }
+    .paper-card {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 18px 18px 12px 18px;
+      border: 2px solid #e9ecef;
+      transition: all 0.2s;
+      cursor: pointer;
+      position: relative;
+      min-height: 160px;
+      box-shadow: 0 2px 8px rgba(102,126,234,0.04);
+    }
+    .paper-card.selected, .paper-card:hover {
+      border-color: #667eea;
+      background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+      box-shadow: 0 8px 20px rgba(102,126,234,0.10);
+    }
+    .paper-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+    .paper-authors {
+      color: #666;
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+      font-style: italic;
+      word-break: break-word;
+    }
+    .paper-summary {
+      color: #555;
+      font-size: 0.97rem;
+      line-height: 1.5;
+      margin-bottom: 10px;
+      word-break: break-word;
+    }
+    .paper-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      color: #888;
+      gap: 10px;
+    }
+    .paper-date {
+      background: #e8f5e8;
+      color: #2e7d32;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .paper-link {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .paper-link:hover {
+      text-decoration: underline;
+    }
+    .mode-content {
+      margin-top: 2rem;
+      min-height: 300px;
+    }
+    .section-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #667eea;
+    }
+    .section-box {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border-left: 4px solid #667eea;
+      font-size: 1.08rem;
+      line-height: 1.7;
+      color: #222;
+      word-break: break-word;
+    }
+    .blackboard {
+      background: #222;
+      color: #fff;
+      font-family: 'Courier New', monospace;
+      border-radius: 10px;
+      padding: 2rem;
+      min-height: 220px;
+      font-size: 1.15rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+      position: relative;
+    }
+    .highlight {
+      background: #ffd700;
+      color: #222;
+      padding: 0.2em 0.4em;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+    .download-section {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 2px dashed #667eea;
+      color: #333;
+    }
+    .ai-app-section {
+      background: #fffbe7;
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border-left: 4px solid #ffd700;
+      color: #333;
+    }
+    .ai-bot {
+      background: #222;
+      color: #ffd700;
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: 'Courier New', monospace;
+      margin-top: 1rem;
+      min-height: 80px;
+    }
+    @media (max-width: 900px) {
+      .mode-selector {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.8rem;
+      }
+      .mode-btn {
+        font-size: 0.9rem;
+        padding: 0.8rem 0.6rem;
+        min-height: 70px;
+      }
+    }
+    @media (max-width: 600px) {
+      .mode-selector {
+        grid-template-columns: 1fr;
+        gap: 0.6rem;
+      }
+      .mode-btn {
+        flex-direction: row;
+        justify-content: flex-start;
+        text-align: left;
+        padding: 0.8rem 1rem;
+        min-height: auto;
+      }
+      .mode-btn i {
+        margin-bottom: 0;
+        margin-right: 0.8rem;
+        font-size: 1.1rem;
+      }
+      .container { padding: 8px; }
+      .search-section, .results-section { padding: 10px; }
+      .papers-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1><i class="fas fa-rocket"></i> Arxiv Research Pilot</h1>
+      <div class="subtitle">Your all-in-one research paper explorer, presenter, and AI assistant</div>
+    </div>
+    <div class="mode-selector" id="modeSelector">
+      <button class="mode-btn active" data-mode="abstract"><i class="fas fa-book-open"></i> Research Paper Read</button>
+      <button class="mode-btn" data-mode="classroom"><i class="fas fa-chalkboard-teacher"></i> Classroom Mode</button>
+      <button class="mode-btn" data-mode="download"><i class="fas fa-download"></i> Download/Extract</button>
+      <button class="mode-btn" data-mode="deepresearch"><i class="fas fa-brain"></i> Deep Research Pilot</button>
+    </div>
+    <div class="search-section">
+      <div class="search-controls">
+        <div class="input-group">
+          <label for="category">Category</label>
+          <select id="category" class="form-control">
+            <option value="cs.AI">AI</option>
+            <option value="cs.CV">Computer Vision</option>
+            <option value="cs.LG">Machine Learning</option>
+            <option value="cs.CL">Computation & Language</option>
+            <option value="cs.NE">Neural Computing</option>
+            <option value="cs.SE">Software Engineering</option>
+            <option value="cs.DC">Distributed Computing</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label for="startDate">Start Date</label>
+          <input type="date" id="startDate" class="form-control">
+        </div>
+        <div class="input-group">
+          <label for="endDate">End Date</label>
+          <input type="date" id="endDate" class="form-control">
+        </div>
+        <button class="btn-primary" id="searchBtn"><i class="fas fa-search"></i> Search</button>
+      </div>
+    </div>
+    <div class="results-section">
+      <div class="papers-grid" id="papersGrid"></div>
+    </div>
+    <div class="mode-content" id="modeContent"></div>
+  </div>
+  <script>
+    // Global variables
+    let papersData = [];
+    let selectedPaper = null;
+    let currentMode = 'abstract';
+
+    // DOM elements
+    const elements = {
+      category: document.getElementById('category'),
+      startDate: document.getElementById('startDate'),
+      endDate: document.getElementById('endDate'),
+      searchBtn: document.getElementById('searchBtn'),
+      papersGrid: document.getElementById('papersGrid'),
+      modeContent: document.getElementById('modeContent'),
+      modeSelector: document.getElementById('modeSelector')
+    };
+
+    // PWA Service Worker Registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('SW registered: ', registration);
+          })
+          .catch(registrationError => {
+            console.log('SW registration failed: ', registrationError);
+          });
+      });
+    }
+
+    // PWA Install Prompt
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      showInstallPrompt();
+    });
+
+    function showInstallPrompt() {
+      const installBtn = document.createElement('div');
+      installBtn.innerHTML = `
+        <div style="position: fixed; top: 20px; right: 20px; background: #667eea; color: white; padding: 12px 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; cursor: pointer; font-weight: 600;">
+          <i class="fas fa-download"></i> Install App
+        </div>
+      `;
+      installBtn.onclick = () => {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted the install prompt');
+          }
+          deferredPrompt = null;
+          installBtn.remove();
+        });
+      };
+      document.body.appendChild(installBtn);
+    }
+
+    // Mobile-specific optimizations
+    function initMobileOptimizations() {
+      // Prevent zoom on double tap
+      let lastTouchEnd = 0;
+      document.addEventListener('touchend', function (event) {
+        const now = (new Date()).getTime();
+        if (now - lastTouchEnd <= 300) {
+          event.preventDefault();
+        }
+        lastTouchEnd = now;
+      }, false);
+
+      // Add touch feedback
+      document.querySelectorAll('.paper-card, .mode-btn, .btn-primary').forEach(element => {
+        element.addEventListener('touchstart', function() {
+          this.style.transform = 'scale(0.98)';
+        });
+        element.addEventListener('touchend', function() {
+          this.style.transform = 'scale(1)';
+        });
+      });
+    }
+
+    // Initialize app
+    document.addEventListener('DOMContentLoaded', function() {
+      // Set default dates
+      const today = new Date();
+      const thirtyDaysAgo = new Date(today.getTime() - (30 * 24 * 60 * 60 * 1000));
+      elements.endDate.value = today.toISOString().split('T')[0];
+      elements.startDate.value = thirtyDaysAgo.toISOString().split('T')[0];
+
+      // Initialize mobile optimizations
+      initMobileOptimizations();
+
+      // Event listeners
+      elements.searchBtn.addEventListener('click', searchPapers);
+      elements.modeSelector.addEventListener('click', handleModeChange);
+
+      // Check for URL parameters (for PWA shortcuts)
+      const urlParams = new URLSearchParams(window.location.search);
+      const mode = urlParams.get('mode');
+      if (mode) {
+        const modeBtn = document.querySelector(`[data-mode="${mode}"]`);
+        if (modeBtn) {
+          modeBtn.click();
+        }
+      }
+
+      // Initial search
+      searchPapers();
+    });
+
+    // Search papers - Updated to use server API
+    async function searchPapers() {
+      const category = elements.category.value;
+      const startDate = elements.startDate.value;
+      const endDate = elements.endDate.value;
+      
+      if (!category) {
+        alert('Please select a category');
+        return;
+      }
+      
+      elements.searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
+      elements.searchBtn.disabled = true;
+      
+      try {
+        const params = new URLSearchParams({
+          category: category,
+          ...(startDate && { startDate: startDate.replace(/-/g, '') }),
+          ...(endDate && { endDate: endDate.replace(/-/g, '') })
+        });
+        
+        const response = await fetch(`/api/papers?${params}`);
+        const result = await response.json();
+        
+        if (result.success) {
+          papersData = result.papers;
+          displayPapers();
+          updateModeContent();
+        } else {
+          throw new Error(result.error || 'Failed to fetch papers');
+        }
+        
+      } catch (error) {
+        console.error('Error fetching papers:', error);
+        elements.papersGrid.innerHTML = `
+          <div style="text-align: center; padding: 40px; color: #666;">
+            <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #ccc; margin-bottom: 20px;"></i>
+            <h3>Error Loading Papers</h3>
+            <p>${error.message}</p>
+            <button class="btn-primary" onclick="searchPapers()">
+              <i class="fas fa-refresh"></i> Try Again
+            </button>
+          </div>
+        `;
+      } finally {
+        elements.searchBtn.innerHTML = '<i class="fas fa-search"></i> Search';
+        elements.searchBtn.disabled = false;
+      }
+    }
+
+    // Display papers in grid
+    function displayPapers() {
+      if (papersData.length === 0) {
+        elements.papersGrid.innerHTML = `
+          <div style="text-align: center; padding: 40px; color: #666;">
+            <i class="fas fa-search" style="font-size: 3rem; color: #ccc; margin-bottom: 20px;"></i>
+            <h3>No papers found</h3>
+            <p>Try adjusting your search criteria or date range.</p>
+          </div>
+        `;
+        return;
+      }
+
+      const papersHTML = papersData.map((paper, index) => `
+        <div class="paper-card" data-index="${index}" onclick="selectPaper(${index})">
+          <div class="paper-title">${paper.title}</div>
+          <div class="paper-authors">${paper.authors}</div>
+          <div class="paper-summary">${paper.summary}</div>
+          <div class="paper-meta">
+            <span class="paper-date">${formatDate(paper.published)}</span>
+            <a href="${paper.pdfUrl}" target="_blank" class="paper-link" onclick="event.stopPropagation()">
+              <i class="fas fa-external-link-alt"></i> PDF
+            </a>
+          </div>
+        </div>
+      `).join('');
+
+      elements.papersGrid.innerHTML = papersHTML;
+    }
+
+    // Select a paper - Server-side processing approach
+    async function selectPaper(index) {
+      // Remove previous selection
+      document.querySelectorAll('.paper-card').forEach(card => {
+        card.classList.remove('selected');
+      });
+      
+      // Add selection to clicked card
+      const selectedCard = document.querySelector(`[data-index="${index}"]`);
+      if (selectedCard) {
+        selectedCard.classList.add('selected');
+      }
+      
+      selectedPaper = papersData[index];
+      updateModeContent();
+      
+      // Open PDF in new tab
+      window.open(selectedPaper.pdfUrl, '_blank');
+      
+      // Start server-side content extraction
+      elements.modeContent.innerHTML += `
+        <div id="contentStatus" style="margin-top:1rem;color:#888;">
+          <i class="fas fa-spinner fa-spin"></i> Processing paper content on server...
+          <br><small style="color: #666;">PDF opened in new tab. Extracting and organizing content...</small>
+        </div>
+      `;
+      
+      try {
+        const response = await fetch('/api/papers/extract', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ paper: selectedPaper })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success && result.content) {
+          selectedPaper.fullText = result.content.fullText;
+          selectedPaper.sections = result.content.sections;
+          selectedPaper.wordCount = result.content.wordCount;
+          selectedPaper.characterCount = result.content.characterCount;
+          
+          document.getElementById('contentStatus').innerHTML = `
+            <div style="color: #28a745; font-weight: 600;">
+              <i class="fas fa-check-circle"></i> Paper content processed successfully!
+              <br><small style="color: #666;">
+                ${result.content.wordCount} words, ${result.content.characterCount} characters, ${result.content.sections.length} sections
+              </small>
+            </div>
+          `;
+        } else {
+          selectedPaper.fullText = null;
+          document.getElementById('contentStatus').innerHTML = `
+            <div style="color: #ffc107; font-weight: 600;">
+              <i class="fas fa-exclamation-triangle"></i> Server processing failed. Using abstract only.
+              <br><small style="color: #666;">Error: ${result.error || 'Unknown error'}</small>
+            </div>
+          `;
+        }
+        
+        // Update the mode content to reflect the new data
+        updateModeContent();
+        
+      } catch (err) {
+        console.error('Server processing failed:', err);
+        selectedPaper.fullText = null;
+        document.getElementById('contentStatus').innerHTML = `
+          <div style="color: #dc3545; font-weight: 600;">
+            <i class="fas fa-times-circle"></i> Server processing failed. Using abstract only.
+            <br><small style="color: #666;">Error: ${err.message}</small>
+          </div>
+        `;
+        updateModeContent();
+      }
+    }
+
+    // Handle mode change
+    function handleModeChange(event) {
+      if (event.target.classList.contains('mode-btn')) {
+        // Update active button
+        document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+
+        // Update current mode
+        currentMode = event.target.dataset.mode;
+        updateModeContent();
+      }
+    }
+
+    // Update mode content based on selected paper and mode
+    function updateModeContent() {
+      if (!selectedPaper) {
+        elements.modeContent.innerHTML = `
+          <div style="text-align: center; padding: 40px; color: #666;">
+            <i class="fas fa-hand-pointer" style="font-size: 3rem; color: #ccc; margin-bottom: 20px;"></i>
+            <h3>Select a Paper</h3>
+            <p>Click on any paper card above to view it in ${getModeDisplayName(currentMode)}.</p>
+          </div>
+        `;
+        return;
+      }
+
+      switch (currentMode) {
+        case 'abstract':
+          showAbstractMode();
+          break;
+        case 'classroom':
+          showClassroomMode();
+          break;
+        case 'download':
+          showDownloadMode();
+          break;
+        case 'deepresearch':
+          showDeepResearchMode();
+          break;
+      }
+    }
+
+    // Research Paper Read Mode - Enhanced with server-processed content
+    function showAbstractMode() {
+      const hasFullText = selectedPaper.fullText && selectedPaper.fullText.length > 500;
+      const displayText = hasFullText ? selectedPaper.fullText : selectedPaper.summary;
+      
+      elements.modeContent.innerHTML = `
+        <div class="section-title">
+          <i class="fas fa-book-open"></i> Research Paper Read Mode ${hasFullText ? '(Full Paper Content)' : '(Abstract Only)'}
+        </div>
+        <div class="section-box">
+          <h3 style="margin-bottom: 1rem; color: #667eea;">${selectedPaper.title}</h3>
+          <p style="margin-bottom: 1rem;"><strong>Authors:</strong> ${selectedPaper.authors}</p>
+          <p style="margin-bottom: 1rem;"><strong>Published:</strong> ${formatDate(selectedPaper.published)}</p>
+          ${hasFullText ? `
+            <p style="margin-bottom: 1rem;"><strong>Content Stats:</strong> ${selectedPaper.wordCount} words, ${selectedPaper.characterCount} characters</p>
+          ` : ''}
+          <div style="margin-top: 1.5rem;">
+            <h4 style="color: #667eea; margin-bottom: 0.5rem;">${hasFullText ? 'Full Paper Content:' : 'Abstract:'}</h4>
+            <div style="line-height: 1.7; text-align: justify; max-height: 400px; overflow-y: auto; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+              ${displayText.replace(/\n/g, '<br>')}
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <button class="btn-primary" onclick="speakText('${displayText.replace(/'/g, "\\'")}')" id="speakBtn">
+            <i class="fas fa-volume-up"></i> Listen to ${hasFullText ? 'Paper' : 'Abstract'}
+          </button>
+          <button class="btn-primary" onclick="stopSpeaking()" id="stopBtn" style="display: none;">
+            <i class="fas fa-stop"></i> Stop
+          </button>
+          <button class="btn-primary" onclick="speakText('${selectedPaper.title.replace(/'/g, "\\'")}')" id="speakTitleBtn">
+            <i class="fas fa-volume-up"></i> Listen to Title
+          </button>
+          <button class="btn-primary" onclick="stopSpeaking()" id="stopTitleBtn" style="display: none;">
+            <i class="fas fa-stop"></i> Stop Title
+          </button>
+          <button class="btn-primary" onclick="window.open('${selectedPaper.pdfUrl}', '_blank')">
+            <i class="fas fa-file-pdf"></i> Open PDF in New Tab
+          </button>
+          <button class="btn-primary" onclick="window.open('https://arxiv.org/html/${selectedPaper.id}', '_blank')">
+            <i class="fas fa-file-code"></i> Open HTML in New Tab
+          </button>
+        </div>
+      `;
+    }
+
+    // Classroom Mode - Enhanced with server-processed sections and PDF/HTML extraction
+    async function showClassroomMode() {
+      elements.modeContent.innerHTML = `
+        <div class="section-title">
+          <i class="fas fa-chalkboard-teacher"></i> Classroom Mode - Loading Enhanced Content...
+        </div>
+        <div class="section-box">
+          <div style="text-align: center; padding: 2rem;">
+            <div class="spinner" style="margin: 0 auto 1rem;"></div>
+            <p>Extracting full paper content from PDF/HTML sources...</p>
+          </div>
+        </div>
+      `;
+
+      try {
+        // Try to get enhanced content from server
+        const response = await fetch('/api/extract-enhanced', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            paper: {
+              ...selectedPaper,
+              pdfUrl: selectedPaper.pdfUrl || `https://arxiv.org/pdf/${selectedPaper.id}.pdf`
+            }
+          })
+        });
+
+        const data = await response.json();
+        
+        if (data.success && data.content.sections && data.content.sections.length > 0 && data.content.wordCount > 100) {
+          // Use enhanced content with full sections
+          const sections = data.content.sections;
+          let currentSection = 0;
+
+          function renderClassroomSection() {
+            const section = sections[currentSection];
+            const sectionTitle = section.title;
+            const sectionContent = section.content;
+            
+            elements.modeContent.innerHTML = `
+              <div class="section-title">
+                <i class="fas fa-chalkboard-teacher"></i> Classroom Mode (Full Paper Content)
+              </div>
+              <div class="blackboard">
+                <div style="margin-bottom: 1rem; color: #ffd700;">
+                  <strong>${sectionTitle} (${currentSection + 1} of ${sections.length})</strong>
+                </div>
+                <div id="animatedText" style="line-height: 1.6; max-height: 300px; overflow-y: auto;">${sectionContent}</div>
+              </div>
+              <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+                <button class="btn-primary" ${currentSection === 0 ? 'disabled' : ''} onclick="changeClassroomSection(${currentSection - 1})">
+                  <i class="fas fa-chevron-left"></i> Previous
+                </button>
+                <button class="btn-primary" onclick="speakText('${sectionContent.replace(/'/g, "\\'")}')" id="speakBtn">
+                  <i class="fas fa-volume-up"></i> Read Aloud
+                </button>
+                <button class="btn-primary" onclick="stopSpeaking()" id="stopBtn" style="display: none;">
+                  <i class="fas fa-stop"></i> Stop
+                </button>
+                <button class="btn-primary" ${currentSection === sections.length - 1 ? 'disabled' : ''} onclick="changeClassroomSection(${currentSection + 1})">
+                  Next <i class="fas fa-chevron-right"></i>
+                </button>
+              </div>
+              <div style="margin-top: 1rem; text-align: center; color: #28a745; font-size: 0.9rem;">
+                <i class="fas fa-check-circle"></i> Enhanced content loaded (${data.content.wordCount} words)
+              </div>
+            `;
+            animateText(sectionContent);
+          }
+
+          window.changeClassroomSection = function(newSection) {
+            if (newSection >= 0 && newSection < sections.length) {
+              currentSection = newSection;
+              renderClassroomSection();
+            }
+          };
+
+          renderClassroomSection();
+        } else {
+          // Fallback to original content - always works
+          const hasFullText = selectedPaper.fullText && selectedPaper.fullText.length > 500;
+          const sections = hasFullText && selectedPaper.sections ? selectedPaper.sections : splitIntoSection(selectedPaper.summary);
+          
+          let currentSection = 0;
+
+          function renderClassroomSection() {
+            const section = sections[currentSection];
+            const sectionTitle = section.title;
+            const sectionContent = section.content;
+            
+            elements.modeContent.innerHTML = `
+              <div class="section-title">
+                <i class="fas fa-chalkboard-teacher"></i> Classroom Mode ${hasFullText ? '(Full Paper)' : '(Abstract)'}
+              </div>
+              <div class="blackboard">
+                <div style="margin-bottom: 1rem; color: #ffd700;">
+                  <strong>${sectionTitle} (${currentSection + 1} of ${sections.length})</strong>
+                </div>
+                <div id="animatedText" style="line-height: 1.6; max-height: 300px; overflow-y: auto;">${sectionContent}</div>
+              </div>
+              <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+                <button class="btn-primary" ${currentSection === 0 ? 'disabled' : ''} onclick="changeClassroomSection(${currentSection - 1})">
+                  <i class="fas fa-chevron-left"></i> Previous
+                </button>
+                <button class="btn-primary" onclick="speakText('${sectionContent.replace(/'/g, "\\'")}')" id="speakBtn">
+                  <i class="fas fa-volume-up"></i> Read Aloud
+                </button>
+                <button class="btn-primary" onclick="stopSpeaking()" id="stopBtn" style="display: none;">
+                  <i class="fas fa-stop"></i> Stop
+                </button>
+                <button class="btn-primary" ${currentSection === sections.length - 1 ? 'disabled' : ''} onclick="changeClassroomSection(${currentSection + 1})">
+                  Next <i class="fas fa-chevron-right"></i>
+                </button>
+              </div>
+              <div style="margin-top: 1rem; text-align: center; color: #ffc107; font-size: 0.9rem;">
+                <i class="fas fa-exclamation-triangle"></i> Using available content (${sections.length} sections)
+              </div>
+            `;
+            animateText(sectionContent);
+          }
+
+          window.changeClassroomSection = function(newSection) {
+            if (newSection >= 0 && newSection < sections.length) {
+              currentSection = newSection;
+              renderClassroomSection();
+            }
+          };
+
+          renderClassroomSection();
+        }
+      } catch (error) {
+        console.error('Error loading enhanced content:', error);
+        // Fallback to original implementation - always works
+        const hasFullText = selectedPaper.fullText && selectedPaper.fullText.length > 500;
+        const sections = hasFullText && selectedPaper.sections ? selectedPaper.sections : splitIntoSection(selectedPaper.summary);
+        
+        let currentSection = 0;
+
+        function renderClassroomSection() {
+          const section = sections[currentSection];
+          const sectionTitle = section.title;
+          const sectionContent = section.content;
+          
+          elements.modeContent.innerHTML = `
+            <div class="section-title">
+              <i class="fas fa-chalkboard-teacher"></i> Classroom Mode ${hasFullText ? '(Full Paper)' : '(Abstract)'}
+            </div>
+            <div class="blackboard">
+              <div style="margin-bottom: 1rem; color: #ffd700;">
+                <strong>${sectionTitle} (${currentSection + 1} of ${sections.length})</strong>
+              </div>
+              <div id="animatedText" style="line-height: 1.6; max-height: 300px; overflow-y: auto;">${sectionContent}</div>
+            </div>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+              <button class="btn-primary" ${currentSection === 0 ? 'disabled' : ''} onclick="changeClassroomSection(${currentSection - 1})">
+                <i class="fas fa-chevron-left"></i> Previous
+              </button>
+              <button class="btn-primary" onclick="speakText('${sectionContent.replace(/'/g, "\\'")}')" id="speakBtn">
+                <i class="fas fa-volume-up"></i> Read Aloud
+              </button>
+              <button class="btn-primary" onclick="stopSpeaking()" id="stopBtn" style="display: none;">
+                <i class="fas fa-stop"></i> Stop
+              </button>
+              <button class="btn-primary" ${currentSection === sections.length - 1 ? 'disabled' : ''} onclick="changeClassroomSection(${currentSection + 1})">
+                Next <i class="fas fa-chevron-right"></i>
+              </button>
+            </div>
+            <div style="margin-top: 1rem; text-align: center; color: #dc3545; font-size: 0.9rem;">
+              <i class="fas fa-exclamation-circle"></i> Using fallback content (${sections.length} sections)
+            </div>
+          `;
+          animateText(sectionContent);
+        }
+
+        window.changeClassroomSection = function(newSection) {
+          if (newSection >= 0 && newSection < sections.length) {
+            currentSection = newSection;
+            renderClassroomSection();
+          }
+        };
+
+        renderClassroomSection();
+      }
+    }
+
+    // Download Mode - Enhanced with server-processed content
+    function showDownloadMode() {
+      const hasFullText = selectedPaper.fullText && selectedPaper.fullText.length > 500;
+      const sections = hasFullText && selectedPaper.sections ? selectedPaper.sections : splitIntoSection(selectedPaper.summary);
+      
+      elements.modeContent.innerHTML = `
+        <div class="section-title">
+          <i class="fas fa-download"></i> Download/Extract Mode ${hasFullText ? '(Full Paper)' : '(Abstract)'}
+        </div>
+        <div class="download-section">
+          <h3 style="margin-bottom: 1rem;">${selectedPaper.title}</h3>
+          <p style="margin-bottom: 1.5rem;"><strong>Authors:</strong> ${selectedPaper.authors}</p>
+          <p style="margin-bottom: 1.5rem;"><strong>Published:</strong> ${formatDate(selectedPaper.published)}</p>
+          ${hasFullText ? `
+            <p style="margin-bottom: 1.5rem;"><strong>Content Stats:</strong> ${selectedPaper.wordCount} words, ${selectedPaper.characterCount} characters</p>
+          ` : ''}
+          
+          <div style="margin: 1.5rem 0;">
+            <h4 style="color: #667eea; margin-bottom: 1rem;">Download Options:</h4>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+              <button class="btn-primary" onclick="window.open('${selectedPaper.pdfUrl}', '_blank')">
+                <i class="fas fa-file-pdf"></i> Open PDF
+              </button>
+              <button class="btn-primary" onclick="downloadPowerPoint()">
+                <i class="fas fa-file-powerpoint"></i> PowerPoint Style
+              </button>
+              <button class="btn-primary" onclick="downloadFullText()">
+                <i class="fas fa-file-text"></i> Download Full Text
+              </button>
+            </div>
+          </div>
+
+          <div style="margin: 1.5rem 0;">
+            <h4 style="color: #667eea; margin-bottom: 1rem;">Paper Sections (${sections.length} total):</h4>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 300px; overflow-y: auto;">
+              ${sections.map((section, index) => {
+                const title = section.title;
+                const content = section.content;
+                return `
+                  <label style="display: flex; align-items: flex-start; gap: 0.5rem; cursor: pointer; padding: 0.5rem; background: #f8f9fa; border-radius: 4px;">
+                    <input type="checkbox" checked style="margin-top: 0.2rem;">
+                    <div style="flex: 1;">
+                      <strong style="font-size: 0.9rem;">${title}</strong>
+                      <div style="font-size: 0.85rem; color: #666; margin-top: 0.2rem;">${content.substring(0, 150)}...</div>
+                    </div>
+                  </label>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Deep Research Mode - Enhanced with server-processed content
+    function showDeepResearchMode() {
+      const hasFullText = selectedPaper.fullText && selectedPaper.fullText.length > 500;
+      
+      elements.modeContent.innerHTML = `
+        <div class="section-title">
+          <i class="fas fa-brain"></i> Deep Research -Pilot Mode ${hasFullText ? '(Full Paper)' : '(Abstract)'}
+        </div>
+        
+        <div class="research-studio">
+          <!-- Left Panel: Research Files & Applications -->
+          <div class="studio-left-panel">
+            <div class="panel-header">
+              <h3><i class="fas fa-folder-open"></i> Research Studio</h3>
+              <p class="paper-title">${selectedPaper.title}</p>
+            </div>
+            
+            <!-- Research Files Section -->
+            <div class="file-section">
+              <h4><i class="fas fa-file-alt"></i> Research Files</h4>
+              <div class="file-list">
+                <div class="file-item" onclick="openFile('pdf')">
+                  <i class="fas fa-file-pdf"></i>
+                  <span>${selectedPaper.title}.pdf</span>
+                  <small>Full Research Paper</small>
+                </div>
+                <div class="file-item" onclick="openFile('html')">
+                  <i class="fas fa-file-code"></i>
+                  <span>${selectedPaper.title}.html</span>
+                  <small>Web Version</small>
+                </div>
+                <div class="file-item" onclick="openFile('bibtex')">
+                  <i class="fas fa-quote-left"></i>
+                  <span>citation.bib</span>
+                  <small>BibTeX Citation</small>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Software Files Section -->
+            <div class="file-section">
+              <h4><i class="fas fa-code"></i> Software Files</h4>
+              <div class="file-list">
+                <div class="file-item" onclick="runApplication('demo')">
+                  <i class="fas fa-play-circle"></i>
+                  <span>demo_app.py</span>
+                  <small>Demo Application</small>
+                </div>
+                <div class="file-item" onclick="runApplication('analysis')">
+                  <i class="fas fa-chart-line"></i>
+                  <span>analysis_tool.py</span>
+                  <small>Content Analysis</small>
+                </div>
+                <div class="file-item" onclick="runApplication('visualization')">
+                  <i class="fas fa-chart-bar"></i>
+                  <span>visualization.py</span>
+                  <small>Data Visualization</small>
+                </div>
+                <div class="file-item" onclick="runApplication('nlp')">
+                  <i class="fas fa-language"></i>
+                  <span>nlp_processor.py</span>
+                  <small>NLP Processing</small>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Research Applications Section -->
+            <div class="file-section">
+              <h4><i class="fas fa-rocket"></i> Research Applications</h4>
+              <div class="app-list">
+                <div class="app-item" onclick="runResearchApp('summarizer')">
+                  <i class="fas fa-compress-alt"></i>
+                  <span>Smart Summarizer</span>
+                  <small>AI-powered content summarization</small>
+                </div>
+                <div class="app-item" onclick="runResearchApp('recommender')">
+                  <i class="fas fa-lightbulb"></i>
+                  <span>Research Recommender</span>
+                  <small>Find related papers and insights</small>
+                </div>
+                <div class="app-item" onclick="runResearchApp('generator')">
+                  <i class="fas fa-magic"></i>
+                  <span>Code Generator</span>
+                  <small>Generate code from research concepts</small>
+                </div>
+                <div class="app-item" onclick="runResearchApp('experiment')">
+                  <i class="fas fa-flask"></i>
+                  <span>Experiment Designer</span>
+                  <small>Design experiments based on research</small>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Right Panel: Interactive Chat Session -->
+          <div class="studio-right-panel">
+            <div class="chat-header">
+              <h3><i class="fas fa-comments"></i> AI Research Assistant</h3>
+              <p>Interactive chat to understand, test, and create</p>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+              <div class="message ai-message">
+                <div class="message-avatar">🤖</div>
+                <div class="message-content">
+                  <strong>AI Assistant:</strong> Welcome to the Research Studio! I'm here to help you understand "${selectedPaper.title}" and create amazing applications. 
+                  <br><br>
+                  I can help you:
+                  <ul>
+                    <li>Analyze the research methodology</li>
+                    <li>Generate code implementations</li>
+                    <li>Design experiments and tests</li>
+                    <li>Create new research applications</li>
+                    <li>Explain complex concepts</li>
+                  </ul>
+                  <br>
+                  What would you like to explore or create today?
+                </div>
+              </div>
+            </div>
+            
+            <div class="chat-input-area">
+              <div class="input-group">
+                <input type="text" id="chatInput" placeholder="Ask me to analyze, create, or explain something..." 
+                       onkeypress="if(event.key==='Enter') sendChatMessage()">
+                <button onclick="sendChatMessage()" class="send-btn">
+                  <i class="fas fa-paper-plane"></i>
+                </button>
+              </div>
+              
+              <div class="quick-actions">
+                <button class="quick-btn" onclick="quickAction('analyze')">
+                  <i class="fas fa-search"></i> Analyze Paper
+                </button>
+                <button class="quick-btn" onclick="quickAction('code')">
+                  <i class="fas fa-code"></i> Generate Code
+                </button>
+                <button class="quick-btn" onclick="quickAction('experiment')">
+                  <i class="fas fa-flask"></i> Design Experiment
+                </button>
+                <button class="quick-btn" onclick="quickAction('app')">
+                  <i class="fas fa-mobile-alt"></i> Create App
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <style>
+          .research-studio {
+            display: flex;
+            gap: 2rem;
+            height: 70vh;
+            margin-top: 1rem;
+          }
+          
+          .studio-left-panel {
+            flex: 1;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 1.5rem;
+            overflow-y: auto;
+            border: 2px solid #e9ecef;
+          }
+          
+          .studio-right-panel {
+            flex: 1;
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            border: 2px solid #667eea;
+          }
+          
+          .panel-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #dee2e6;
+          }
+          
+          .panel-header h3 {
+            color: #667eea;
+            margin-bottom: 0.5rem;
+          }
+          
+          .paper-title {
+            font-size: 0.9rem;
+            color: #6c757d;
+            font-style: italic;
+          }
+          
+          .file-section {
+            margin-bottom: 2rem;
+          }
+          
+          .file-section h4 {
+            color: #495057;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+          }
+          
+          .file-list, .app-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+          }
+          
+          .file-item, .app-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: #ffffff;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            cursor: pointer;
+            transition: all 0.3s ease;
+          }
+          
+          .file-item:hover, .app-item:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+          }
+          
+          .file-item i, .app-item i {
+            font-size: 1.2rem;
+            width: 20px;
+          }
+          
+          .file-item span, .app-item span {
+            font-weight: 500;
+            flex: 1;
+          }
+          
+          .file-item small, .app-item small {
+            font-size: 0.75rem;
+            opacity: 0.7;
+          }
+          
+          .chat-header {
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e9ecef;
+          }
+          
+          .chat-header h3 {
+            color: #667eea;
+            margin-bottom: 0.5rem;
+          }
+          
+          .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+          }
+          
+          .message {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+          }
+          
+          .message-avatar {
+            font-size: 1.5rem;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            flex-shrink: 0;
+          }
+          
+          .message-content {
+            background: white;
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            flex: 1;
+          }
+          
+          .user-message .message-avatar {
+            background: #28a745;
+          }
+          
+          .chat-input-area {
+            margin-top: auto;
+          }
+          
+          .input-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+          }
+          
+          .input-group input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 0.9rem;
+          }
+          
+          .send-btn {
+            padding: 0.75rem 1rem;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+          }
+          
+          .send-btn:hover {
+            background: #5a6fd8;
+          }
+          
+          .quick-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+          }
+          
+          .quick-btn {
+            padding: 0.5rem 1rem;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+          }
+          
+          .quick-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+          }
+        </style>
+      `;
+    }
+
+    // Studio Functions
+    function openFile(fileType) {
+      const fileName = selectedPaper.title.replace(/[^a-zA-Z0-9]/g, '_');
+      let content = '';
+      let fileExtension = '';
+      
+      switch(fileType) {
+        case 'pdf':
+          // Simulate opening PDF in new tab
+          window.open(`https://arxiv.org/pdf/${selectedPaper.id}.pdf`, '_blank');
+          addChatMessage('user', `Opened PDF file: ${fileName}.pdf`);
+          addChatMessage('ai', `I've opened the PDF version of "${selectedPaper.title}" in a new tab. You can now view the full research paper with all figures, tables, and detailed methodology.`);
+          return;
+          
+        case 'html':
+          // Simulate opening HTML version
+          window.open(`https://arxiv.org/html/${selectedPaper.id}`, '_blank');
+          addChatMessage('user', `Opened HTML file: ${fileName}.html`);
+          addChatMessage('ai', `I've opened the HTML version of the paper. This web format is easier to read and navigate, with clickable references and better formatting.`);
+          return;
+          
+        case 'bibtex':
+          content = `@article{${selectedPaper.id},
+  title={${selectedPaper.title}},
+  author={${selectedPaper.authors}},
+  journal={arXiv preprint arXiv:${selectedPaper.id}},
+  year={${new Date(selectedPaper.published).getFullYear()}},
+  url={https://arxiv.org/abs/${selectedPaper.id}}
+}`;
+          fileExtension = 'bib';
+          break;
+      }
+      
+      if (content) {
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${fileName}.${fileExtension}`;
+        a.click();
+        URL.revokeObjectURL(url);
+        
+        addChatMessage('user', `Downloaded ${fileType.toUpperCase()} file: ${fileName}.${fileExtension}`);
+        addChatMessage('ai', `I've generated and downloaded the ${fileType.toUpperCase()} file for you. You can now use this in your research workflow.`);
+      }
+    }
+
+    function runApplication(appType) {
+      const appNames = {
+        'demo': 'Demo Application',
+        'analysis': 'Content Analysis Tool',
+        'visualization': 'Data Visualization Tool',
+        'nlp': 'NLP Processing Tool'
+      };
+      
+      addChatMessage('user', `Running ${appNames[appType]}`);
+      
+      let response = '';
+      switch(appType) {
+        case 'demo':
+          response = `🚀 **${appNames[appType]}** is now running!
+          
+This demo application demonstrates key concepts from "${selectedPaper.title}":
+- **Input Processing**: Analyzing research content
+- **Feature Extraction**: Identifying key methodologies
+- **Output Generation**: Creating practical implementations
+
+The app is running in the background and processing the research data. You can interact with it through the chat interface.`;
+          break;
+          
+        case 'analysis':
+          response = `📊 **${appNames[appType]}** is analyzing the research content...
+          
+**Analysis Results:**
+- **Research Area**: ${elements.category.options[elements.category.selectedIndex].text}
+- **Content Length**: ${selectedPaper.wordCount || 'Unknown'} words
+- **Key Topics**: Machine Learning, AI, Research Methodology
+- **Complexity Level**: Advanced
+- **Practical Applications**: High potential for real-world use
+
+The analysis tool has processed the paper and identified key insights and applications.`;
+          break;
+          
+        case 'visualization':
+          response = `📈 **${appNames[appType]}** is creating visual representations...
+          
+**Generated Visualizations:**
+- **Research Timeline**: Publication and citation trends
+- **Concept Map**: Key ideas and their relationships
+- **Methodology Flow**: Research process visualization
+- **Impact Metrics**: Citation and influence analysis
+
+The visualization tool has created interactive charts and graphs to help you understand the research better.`;
+          break;
+          
+        case 'nlp':
+          response = `🔤 **${appNames[appType]}** is processing the text content...
+          
+**NLP Analysis Results:**
+- **Sentiment**: Academic/Technical
+- **Key Entities**: Research terms, methodologies, applications
+- **Topic Modeling**: Main research themes identified
+- **Text Complexity**: Advanced academic level
+- **Language Patterns**: Formal research writing style
+
+The NLP processor has extracted key insights and structured the content for further analysis.`;
+          break;
+      }
+      
+      addChatMessage('ai', response);
+    }
+
+    function runResearchApp(appType) {
+      const appNames = {
+        'summarizer': 'Smart Summarizer',
+        'recommender': 'Research Recommender',
+        'generator': 'Code Generator',
+        'experiment': 'Experiment Designer'
+      };
+      
+      addChatMessage('user', `Launching ${appNames[appType]}`);
+      
+      let response = '';
+      switch(appType) {
+        case 'summarizer':
+          response = `📝 **${appNames[appType]}** has processed the research paper:
+          
+**Executive Summary:**
+This research paper presents innovative approaches in ${elements.category.options[elements.category.selectedIndex].text}. The study demonstrates significant improvements in methodology and practical applications.
+
+**Key Points:**
+- Novel methodology for research analysis
+- Improved accuracy and efficiency
+- Real-world applicability demonstrated
+- Future research directions identified
+
+**Technical Summary:**
+The paper introduces advanced techniques that show promising results in experimental validation.`;
+          break;
+          
+        case 'recommender':
+          response = `💡 **${appNames[appType]}** has found related research:
+          
+**Related Papers:**
+1. "Advanced AI Applications in Research" (2024)
+2. "Machine Learning Methodologies" (2023)
+3. "Research Automation Systems" (2024)
+4. "AI-Powered Analysis Tools" (2023)
+
+**Recommended Research Areas:**
+- Extended methodology applications
+- Cross-domain implementations
+- Performance optimization studies
+- Real-world deployment strategies
+
+**Collaboration Opportunities:**
+- Research groups working on similar topics
+- Industry partnerships for practical applications
+- Academic institutions with complementary expertise`;
+          break;
+          
+        case 'generator':
+          response = `⚡ **${appNames[appType]}** has created implementation code:
+          
+**Generated Code Structure:**
+\`\`\`python
+# Research Implementation: ${selectedPaper.title}
+import numpy as np
+import pandas as pd
+from sklearn import metrics
+
+class ResearchImplementation:
+    def __init__(self):
+        self.methodology = "Advanced AI Research"
+        
+    def analyze_content(self, data):
+        # Implementation of research methodology
+        return processed_results
+        
+    def generate_insights(self, results):
+        # Generate research insights
+        return insights
+
+# Usage example
+implementation = ResearchImplementation()
+results = implementation.analyze_content(your_data)
+\`\`\`
+
+**Code Features:**
+- Modular architecture
+- Scalable implementation
+- Error handling
+- Documentation included`;
+          break;
+          
+        case 'experiment':
+          response = `🧪 **${appNames[appType]}** has designed research experiments:
+          
+**Experiment Design:**
+1. **Hypothesis Testing**: Validate research claims
+2. **Comparative Analysis**: Compare with existing methods
+3. **Performance Evaluation**: Measure effectiveness
+4. **Scalability Testing**: Test with larger datasets
+
+**Experimental Setup:**
+- **Dataset**: Research paper content
+- **Metrics**: Accuracy, efficiency, scalability
+- **Baseline**: Existing methodologies
+- **Duration**: 2-4 weeks
+
+**Expected Outcomes:**
+- Validation of research methodology
+- Performance benchmarks
+- Practical implementation guidelines
+- Future research directions`;
+          break;
+      }
+      
+      addChatMessage('ai', response);
+    }
+
+    function sendChatMessage() {
+      const input = document.getElementById('chatInput');
+      const message = input.value.trim();
+      
+      if (!message) return;
+      
+      addChatMessage('user', message);
+      input.value = '';
+      
+      // Simulate AI response
+      setTimeout(() => {
+        const responses = [
+          `I understand you're asking about "${message}". Based on the research paper "${selectedPaper.title}", I can help you explore this topic further. What specific aspect would you like to dive into?`,
+          `Great question! The research paper addresses this through its methodology. Let me analyze the content and provide you with detailed insights about "${message}".`,
+          `That's an interesting point about "${message}". The paper's findings suggest several approaches. Would you like me to generate some code or create a practical implementation?`,
+          `I'm processing your request about "${message}". The research methodology in this paper could be applied to create innovative solutions. Should we design an experiment or build a prototype?`
+        ];
+        
+        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+        addChatMessage('ai', randomResponse);
+      }, 1000);
+    }
+
+    function quickAction(action) {
+      const actions = {
+        'analyze': 'Analyze the research paper methodology and key findings',
+        'code': 'Generate implementation code based on the research',
+        'experiment': 'Design experiments to test the research claims',
+        'app': 'Create a practical application based on the research'
+      };
+      
+      const input = document.getElementById('chatInput');
+      input.value = actions[action];
+      sendChatMessage();
+    }
+
+    function addChatMessage(sender, message) {
+      const chatMessages = document.getElementById('chatMessages');
+      if (!chatMessages) return;
+      
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${sender}-message`;
+      
+      const avatar = sender === 'user' ? '👤' : '🤖';
+      const avatarBg = sender === 'user' ? '#28a745' : '#667eea';
+      
+      messageDiv.innerHTML = `
+        <div class="message-avatar" style="background: ${avatarBg};">${avatar}</div>
+        <div class="message-content">
+          <strong>${sender === 'user' ? 'You' : 'AI Assistant'}:</strong> ${message}
+        </div>
+      `;
+      
+      chatMessages.appendChild(messageDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Utility functions
+    function formatDate(dateString) {
+      if (!dateString) return 'Unknown date';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    }
+
+    function splitIntoSection(text) {
+      if (!text) return [];
+      
+      const paragraphs = text.split(/\n\s*\n/).filter(p => p.trim().length > 50);
+      return paragraphs.map((p, i) => ({
+        title: `Section ${i + 1}`,
+        content: p.trim()
+      }));
+    }
+
+    function animateText(text) {
+      const element = document.getElementById('animatedText');
+      if (!element) return;
+      
+      element.innerHTML = '';
+      const words = text.split(' ');
+      let index = 0;
+      
+      function addWord() {
+        if (index < words.length) {
+          element.innerHTML += words[index] + ' ';
+          index++;
+          setTimeout(addWord, 50);
+        }
+      }
+      
+      addWord();
+    }
+
+    // Enhanced speech functions with stop functionality
+    let currentSpeech = null;
+
+    function speakText(text) {
+      // Stop any existing speech first
+      if (currentSpeech) {
+        stopSpeaking();
+      }
+
+      // Create new speech
+      currentSpeech = new SpeechSynthesisUtterance(text);
+      currentSpeech.rate = 0.9;
+      currentSpeech.pitch = 1;
+      currentSpeech.volume = 1;
+
+      // Show stop button and hide speak button
+      const speakBtn = document.getElementById('speakBtn');
+      const stopBtn = document.getElementById('stopBtn');
+      if (speakBtn) speakBtn.style.display = 'none';
+      if (stopBtn) stopBtn.style.display = 'inline-block';
+
+      // Handle speech end
+      currentSpeech.onend = function() {
+        currentSpeech = null;
+        if (speakBtn) speakBtn.style.display = 'inline-block';
+        if (stopBtn) stopBtn.style.display = 'none';
+      };
+
+      // Handle speech error
+      currentSpeech.onerror = function() {
+        currentSpeech = null;
+        if (speakBtn) speakBtn.style.display = 'inline-block';
+        if (stopBtn) stopBtn.style.display = 'none';
+        console.error('Speech synthesis error');
+      };
+
+      // Start speaking
+      speechSynthesis.speak(currentSpeech);
+    }
+
+    function stopSpeaking() {
+      if (currentSpeech) {
+        speechSynthesis.cancel();
+        currentSpeech = null;
+      }
+      
+      // Show speak button and hide stop button
+      const speakBtn = document.getElementById('speakBtn');
+      const stopBtn = document.getElementById('stopBtn');
+      if (speakBtn) speakBtn.style.display = 'inline-block';
+      if (stopBtn) stopBtn.style.display = 'none';
+    }
+
+    function downloadPowerPoint() {
+      const hasFullText = selectedPaper.fullText && selectedPaper.fullText.length > 500;
+      const sections = hasFullText && selectedPaper.sections ? selectedPaper.sections : splitIntoSection(selectedPaper.summary);
+      
+      let content = `Title: ${selectedPaper.title}\n`;
+      content += `Authors: ${selectedPaper.authors}\n`;
+      content += `Published: ${formatDate(selectedPaper.published)}\n\n`;
+      
+      sections.forEach((section, index) => {
+        content += `Slide ${index + 1}: ${section.title}\n`;
+        content += `${section.content}\n\n`;
+      });
+      
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${selectedPaper.title.replace(/[^a-zA-Z0-9]/g, '_')}_slides.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function downloadFullText() {
+      const hasFullText = selectedPaper.fullText && selectedPaper.fullText.length > 500;
+      const text = hasFullText ? selectedPaper.fullText : selectedPaper.summary;
+      
+      const content = `Title: ${selectedPaper.title}\n`;
+      content += `Authors: ${selectedPaper.authors}\n`;
+      content += `Published: ${formatDate(selectedPaper.published)}\n\n`;
+      content += text;
+      
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${selectedPaper.title.replace(/[^a-zA-Z0-9]/g, '_')}_full_text.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function askAI() {
+      const input = document.getElementById('aiInput');
+      const question = input.value.trim();
+      
+      if (!question) {
+        alert('Please enter a question');
+        return;
+      }
+      
+      const aiBot = document.getElementById('aiBot');
+      aiBot.innerHTML = `
+        🤖 AI Assistant: <em>Processing your question about "${selectedPaper.title}"...</em>
+        <br><br>
+        <strong>Your question:</strong> ${question}
+        <br><br>
+        <strong>AI Response:</strong> Based on this research paper, I can help you understand the key concepts and potential applications. The paper appears to be in the field of ${elements.category.options[elements.category.selectedIndex].text}. 
+        <br><br>
+        <em>Note: This is a demo response. In a full implementation, this would use advanced AI models to analyze the paper content and provide detailed insights.</em>
+      `;
+      
+      input.value = '';
+    }
+
+    function createDemoApp() {
+      const hasFullText = selectedPaper.fullText && selectedPaper.fullText.length > 500;
+      
+      const content = `// Demo Application Generated from: ${selectedPaper.title}
+// Authors: ${selectedPaper.authors}
+// Research Area: ${elements.category.options[elements.category.selectedIndex].text}
+
+/*
+This is a proof-of-concept application structure based on the research paper.
+In a full implementation, this would generate actual working code.
+
+Key Features:
+- Content Analysis: ${hasFullText ? 'Full paper content available' : 'Abstract-based analysis'}
+- Text Processing: Advanced NLP capabilities
+- User Interface: Modern web-based interface
+- Data Integration: Real-time paper processing
+*/
+
+console.log('Demo application structure generated successfully!');
+console.log('This would create a working application based on the research paper.');
+      `;
+      
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${selectedPaper.title.replace(/[^a-zA-Z0-9]/g, '_')}_demo_app.js`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function getModeDisplayName(mode) {
+      const names = {
+        'abstract': 'Research Paper Read Mode',
+        'classroom': 'Classroom Mode',
+        'download': 'Download/Extract Mode',
+        'deepresearch': 'Deep Research -Pilot Mode'
+      };
+      return names[mode] || mode;
+    }
+  </script>
+</body>
+</html> 
