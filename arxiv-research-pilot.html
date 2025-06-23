@@ -228,6 +228,24 @@
       box-shadow: 0 6px 18px rgba(102,126,234,0.18);
       transform: translateY(-2px);
     }
+    .btn-secondary {
+      background: #fff;
+      color: #667eea;
+      border: 2px solid #667eea;
+      border-radius: 8px;
+      padding: 8px 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 2px 4px rgba(102,126,234,0.1);
+    }
+    .btn-secondary:hover {
+      background: #667eea;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(102,126,234,0.2);
+      transform: translateY(-1px);
+    }
     .results-section {
       background: transparent;
       border-radius: 0;
@@ -1235,7 +1253,7 @@
           ` : ''}
           
           <div style="margin: 1.5rem 0;">
-            <h4 style="color: #667eea; margin-bottom: 1rem;">Download Options:</h4>
+            <h4 style="color: #667eea; margin-bottom: 1rem;">Quick Download Options:</h4>
             <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
               <button class="btn-primary" onclick="window.location.href='${selectedPaper.pdfUrl}'">
                 <i class="fas fa-file-pdf"></i> Open PDF
@@ -1253,14 +1271,25 @@
           </div>
 
           <div style="margin: 1.5rem 0;">
-            <h4 style="color: #667eea; margin-bottom: 1rem;">Paper Sections (${sections.length} total):</h4>
+            <h4 style="color: #667eea; margin-bottom: 1rem;">Select Sections to Download (${sections.length} total):</h4>
+            <div style="margin-bottom: 1rem;">
+              <button class="btn-secondary" onclick="selectAllSections()" style="margin-right: 0.5rem;">
+                <i class="fas fa-check-square"></i> Select All
+              </button>
+              <button class="btn-secondary" onclick="deselectAllSections()" style="margin-right: 0.5rem;">
+                <i class="fas fa-square"></i> Deselect All
+              </button>
+              <button class="btn-primary" onclick="downloadSelectedSections()">
+                <i class="fas fa-download"></i> Download Selected Sections
+              </button>
+            </div>
             <div style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 300px; overflow-y: auto;">
               ${sections.map((section, index) => {
                 const title = section.title;
                 const content = section.content;
                 return `
-                  <label style="display: flex; align-items: flex-start; gap: 0.5rem; cursor: pointer; padding: 0.5rem; background: #f8f9fa; border-radius: 4px;">
-                    <input type="checkbox" checked style="margin-top: 0.2rem;">
+                  <label style="display: flex; align-items: flex-start; gap: 0.5rem; cursor: pointer; padding: 0.5rem; background: #f8f9fa; border-radius: 4px; transition: background-color 0.2s;">
+                    <input type="checkbox" checked data-section-index="${index}" style="margin-top: 0.2rem;" onchange="updateSectionSelection()">
                     <div style="flex: 1;">
                       <strong style="font-size: 0.9rem;">${title}</strong>
                       <div style="font-size: 0.85rem; color: #666; margin-top: 0.2rem;">${content.substring(0, 150)}...</div>
@@ -1268,6 +1297,9 @@
                   </label>
                 `;
               }).join('')}
+            </div>
+            <div id="selectionSummary" style="margin-top: 1rem; padding: 0.5rem; background: #e8f5e8; border-radius: 4px; font-size: 0.9rem;">
+              <strong>Selected:</strong> ${sections.length} of ${sections.length} sections
             </div>
           </div>
           
@@ -2168,6 +2200,103 @@ console.log('This would create a working application based on the research paper
       a.download = `${selectedPaper.title.replace(/[^a-zA-Z0-9]/g, '_')}_demo_app.js`;
       a.click();
       URL.revokeObjectURL(url);
+    }
+
+    // Section Selection Functions for Download Mode
+    function selectAllSections() {
+      const checkboxes = document.querySelectorAll('input[data-section-index]');
+      checkboxes.forEach(checkbox => {
+        checkbox.checked = true;
+      });
+      updateSectionSelection();
+    }
+
+    function deselectAllSections() {
+      const checkboxes = document.querySelectorAll('input[data-section-index]');
+      checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+      });
+      updateSectionSelection();
+    }
+
+    function updateSectionSelection() {
+      const checkboxes = document.querySelectorAll('input[data-section-index]');
+      const selectedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+      const totalCount = checkboxes.length;
+      
+      const summaryElement = document.getElementById('selectionSummary');
+      if (summaryElement) {
+        summaryElement.innerHTML = `<strong>Selected:</strong> ${selectedCount} of ${totalCount} sections`;
+        
+        // Update background color based on selection
+        if (selectedCount === 0) {
+          summaryElement.style.background = '#ffe6e6';
+          summaryElement.style.color = '#d32f2f';
+        } else if (selectedCount === totalCount) {
+          summaryElement.style.background = '#e8f5e8';
+          summaryElement.style.color = '#2e7d32';
+        } else {
+          summaryElement.style.background = '#fff3e0';
+          summaryElement.style.color = '#f57c00';
+        }
+      }
+    }
+
+    function downloadSelectedSections() {
+      const hasFullText = selectedPaper.fullText && selectedPaper.fullText.length > 500;
+      const sections = hasFullText && selectedPaper.sections ? selectedPaper.sections : splitIntoSection(selectedPaper.summary);
+      
+      const checkboxes = document.querySelectorAll('input[data-section-index]');
+      const selectedSections = [];
+      
+      checkboxes.forEach(checkbox => {
+        if (checkbox.checked) {
+          const index = parseInt(checkbox.getAttribute('data-section-index'));
+          selectedSections.push(sections[index]);
+        }
+      });
+      
+      if (selectedSections.length === 0) {
+        alert('Please select at least one section to download.');
+        return;
+      }
+      
+      let content = `SELECTED SECTIONS - ${selectedPaper.title}\n`;
+      content += `==========================================\n\n`;
+      content += `Title: ${selectedPaper.title}\n`;
+      content += `Authors: ${selectedPaper.authors}\n`;
+      content += `Published: ${formatDate(selectedPaper.published)}\n`;
+      content += `Content Type: ${hasFullText ? 'Full Paper Content' : 'Abstract-Based Content'}\n`;
+      content += `Selected Sections: ${selectedSections.length} of ${sections.length}\n`;
+      content += `Download Date: ${new Date().toLocaleDateString()}\n\n`;
+      
+      content += `SELECTED SECTIONS:\n`;
+      content += `==================\n\n`;
+      
+      selectedSections.forEach((section, index) => {
+        content += `SECTION ${index + 1}: ${section.title}\n`;
+        content += `----------------------------------------\n`;
+        content += `${section.content}\n\n`;
+      });
+      
+      content += `\nDOWNLOAD NOTES:\n`;
+      content += `===============\n`;
+      content += `- This download contains only the sections you selected\n`;
+      content += `- Total sections in paper: ${sections.length}\n`;
+      content += `- Sections downloaded: ${selectedSections.length}\n`;
+      content += `- Generated by: Arxiv Research Pilot\n`;
+      
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${selectedPaper.title.replace(/[^a-zA-Z0-9]/g, '_')}_selected_sections.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      // Show success message
+      addChatMessage('user', `Downloaded ${selectedSections.length} selected sections from "${selectedPaper.title}"`);
+      addChatMessage('ai', `I've generated a custom download with your selected sections. The file includes ${selectedSections.length} sections out of ${sections.length} total sections from the paper.`);
     }
 
     function getModeDisplayName(mode) {
