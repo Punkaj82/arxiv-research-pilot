@@ -658,14 +658,11 @@
       selectedPaper = papersData[index];
       updateModeContent();
       
-      // Open PDF in new tab
-      window.open(selectedPaper.pdfUrl, '_blank');
-      
       // Start server-side content extraction
       elements.modeContent.innerHTML += `
         <div id="contentStatus" style="margin-top:1rem;color:#888;">
           <i class="fas fa-spinner fa-spin"></i> Processing paper content on server...
-          <br><small style="color: #666;">PDF opened in new tab. Extracting and organizing content...</small>
+          <br><small style="color: #666;">Extracting and organizing content...</small>
         </div>
       `;
       
@@ -801,11 +798,11 @@
           <button class="btn-primary" onclick="stopSpeaking()" id="stopTitleBtn" style="display: none;">
             <i class="fas fa-stop"></i> Stop Title
           </button>
-          <button class="btn-primary" onclick="window.open('${selectedPaper.pdfUrl}', '_blank')">
-            <i class="fas fa-file-pdf"></i> Open PDF in New Tab
+          <button class="btn-primary" onclick="window.location.href='${selectedPaper.pdfUrl}'">
+            <i class="fas fa-file-pdf"></i> Open PDF
           </button>
-          <button class="btn-primary" onclick="window.open('https://arxiv.org/html/${selectedPaper.id}', '_blank')">
-            <i class="fas fa-file-code"></i> Open HTML in New Tab
+          <button class="btn-primary" onclick="window.location.href='https://arxiv.org/html/${selectedPaper.id}'">
+            <i class="fas fa-file-code"></i> Open HTML
           </button>
         </div>
       `;
@@ -1018,7 +1015,7 @@
           <div style="margin: 1.5rem 0;">
             <h4 style="color: #667eea; margin-bottom: 1rem;">Download Options:</h4>
             <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-              <button class="btn-primary" onclick="window.open('${selectedPaper.pdfUrl}', '_blank')">
+              <button class="btn-primary" onclick="window.location.href='${selectedPaper.pdfUrl}'">
                 <i class="fas fa-file-pdf"></i> Open PDF
               </button>
               <button class="btn-primary" onclick="downloadPowerPoint()">
@@ -1410,15 +1407,15 @@
       
       switch(fileType) {
         case 'pdf':
-          // Simulate opening PDF in new tab
-          window.open(`https://arxiv.org/pdf/${selectedPaper.id}.pdf`, '_blank');
+          // Open PDF in same tab
+          window.location.href = `https://arxiv.org/pdf/${selectedPaper.id}.pdf`;
           addChatMessage('user', `Opened PDF file: ${fileName}.pdf`);
-          addChatMessage('ai', `I've opened the PDF version of "${selectedPaper.title}" in a new tab. You can now view the full research paper with all figures, tables, and detailed methodology.`);
+          addChatMessage('ai', `I've opened the PDF version of "${selectedPaper.title}". You can now view the full research paper with all figures, tables, and detailed methodology.`);
           return;
           
         case 'html':
-          // Simulate opening HTML version
-          window.open(`https://arxiv.org/html/${selectedPaper.id}`, '_blank');
+          // Open HTML version in same tab
+          window.location.href = `https://arxiv.org/html/${selectedPaper.id}`;
           addChatMessage('user', `Opened HTML file: ${fileName}.html`);
           addChatMessage('ai', `I've opened the HTML version of the paper. This web format is easier to read and navigate, with clickable references and better formatting.`);
           return;
@@ -1977,25 +1974,25 @@ console.log('This would create a working application based on the research paper
           </div>
           
           <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
-            <button class="btn-primary" onclick="speakText('${demystifiedContent.bigPicture.replace(/'/g, "\\'").replace(/"/g, '\\"')}', 'speakBigPictureBtn')" id="speakBigPictureBtn">
+            <button class="btn-primary" onclick="speakBigPicture()" id="speakBigPictureBtn">
               <i class="fas fa-volume-up"></i> Listen to Big Picture
             </button>
             <button class="btn-primary" onclick="stopSpeaking()" id="stopBigPictureBtn" style="display: none;">
               <i class="fas fa-stop"></i> Stop Big Picture
             </button>
-            <button class="btn-primary" onclick="speakText('${demystifiedContent.documentary.replace(/'/g, "\\'").replace(/"/g, '\\"')}', 'speakDocumentaryBtn')" id="speakDocumentaryBtn">
+            <button class="btn-primary" onclick="speakDocumentary()" id="speakDocumentaryBtn">
               <i class="fas fa-volume-up"></i> Listen to Documentary
             </button>
             <button class="btn-primary" onclick="stopSpeaking()" id="stopDocumentaryBtn" style="display: none;">
               <i class="fas fa-stop"></i> Stop Documentary
             </button>
-            <button class="btn-primary" onclick="speakText('${demystifiedContent.impact.replace(/'/g, "\\'").replace(/"/g, '\\"')}', 'speakImpactBtn')" id="speakImpactBtn">
+            <button class="btn-primary" onclick="speakImpact()" id="speakImpactBtn">
               <i class="fas fa-volume-up"></i> Listen to Why It Matters
             </button>
             <button class="btn-primary" onclick="stopSpeaking()" id="stopImpactBtn" style="display: none;">
               <i class="fas fa-stop"></i> Stop Impact
             </button>
-            <button class="btn-primary" onclick="window.open('${selectedPaper.pdfUrl}', '_blank')">
+            <button class="btn-primary" onclick="window.location.href='${selectedPaper.pdfUrl}'">
               <i class="fas fa-file-pdf"></i> Read Full Paper
             </button>
             <button class="btn-primary" onclick="showClassroomMode()">
@@ -2003,6 +2000,9 @@ console.log('This would create a working application based on the research paper
             </button>
           </div>
         `;
+        
+        // Store demystification content globally for audio functions
+        window.demystifiedContent = demystifiedContent;
       } catch (error) {
         console.error('Error generating demystification:', error);
         elements.modeContent.innerHTML = `
@@ -2161,6 +2161,25 @@ console.log('This would create a working application based on the research paper
       that we haven't even imagined yet. For students and researchers, this work opens up new possibilities for future 
       projects and discoveries. For society as a whole, it contributes to the ongoing effort to create technology that 
       truly serves human needs and enhances our capabilities.`;
+    }
+
+    // Demystification audio functions
+    function speakBigPicture() {
+      if (window.demystifiedContent && window.demystifiedContent.bigPicture) {
+        speakText(window.demystifiedContent.bigPicture, 'speakBigPictureBtn');
+      }
+    }
+
+    function speakDocumentary() {
+      if (window.demystifiedContent && window.demystifiedContent.documentary) {
+        speakText(window.demystifiedContent.documentary, 'speakDocumentaryBtn');
+      }
+    }
+
+    function speakImpact() {
+      if (window.demystifiedContent && window.demystifiedContent.impact) {
+        speakText(window.demystifiedContent.impact, 'speakImpactBtn');
+      }
     }
   </script>
 </body>
