@@ -17,8 +17,12 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname)));
+// app.use(express.static(path.join(__dirname)));
 app.use('/audio', express.static(path.join(__dirname, 'audio')));
+app.use('/cache', express.static(path.join(__dirname, 'cache')));
+app.use('/scripts', express.static(path.join(__dirname, 'scripts')));
+app.use('/icons', express.static(path.join(__dirname, 'icons')));
+app.use('/screenshots', express.static(path.join(__dirname, 'screenshots')));
 
 // Create directories if they don't exist
 const audioDir = path.join(__dirname, 'audio');
@@ -683,12 +687,6 @@ app.get('/sw.js', (req, res) => {
   res.setHeader('Content-Type', 'application/javascript');
   res.sendFile(path.join(__dirname, 'sw.js'));
 });
-
-// Serve icons directory
-app.use('/icons', express.static(path.join(__dirname, 'icons')));
-
-// Serve screenshots directory
-app.use('/screenshots', express.static(path.join(__dirname, 'screenshots')));
 
 // Serve arxiv-research-pilot.html for all non-API, non-static routes (SPA support)
 app.get(/^\/(?!api|audio|icons|screenshots|manifest\.json|sw\.js|favicon\.ico).*/, (req, res) => {
