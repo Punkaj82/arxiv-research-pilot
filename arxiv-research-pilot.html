@@ -877,10 +877,10 @@
                 <button class="btn-primary" ${currentSection === 0 ? 'disabled' : ''} onclick="changeClassroomSection(${currentSection - 1})">
                   <i class="fas fa-chevron-left"></i> Previous
                 </button>
-                <button class="btn-primary" onclick="speakText('${sectionContent.replace(/'/g, "\\'")}')" id="speakBtn">
+                <button class="btn-primary" onclick="speakClassroomSection()" id="speakClassroomBtn">
                   <i class="fas fa-volume-up"></i> Read Aloud
                 </button>
-                <button class="btn-primary" onclick="stopSpeaking()" id="stopBtn" style="display: none;">
+                <button class="btn-primary" onclick="stopSpeaking()" id="stopClassroomBtn" style="display: none;">
                   <i class="fas fa-stop"></i> Stop
                 </button>
                 <button class="btn-primary" ${currentSection === sections.length - 1 ? 'disabled' : ''} onclick="changeClassroomSection(${currentSection + 1})">
@@ -891,6 +891,15 @@
                 <i class="fas fa-check-circle"></i> Enhanced content loaded (${data.content.wordCount} words)
               </div>
             `;
+            
+            // Store current section content globally for audio function
+            window.currentClassroomSection = {
+              title: sectionTitle,
+              content: sectionContent,
+              sectionIndex: currentSection,
+              totalSections: sections.length
+            };
+            
             animateText(sectionContent);
           }
 
@@ -928,10 +937,10 @@
                 <button class="btn-primary" ${currentSection === 0 ? 'disabled' : ''} onclick="changeClassroomSection(${currentSection - 1})">
                   <i class="fas fa-chevron-left"></i> Previous
                 </button>
-                <button class="btn-primary" onclick="speakText('${sectionContent.replace(/'/g, "\\'")}')" id="speakBtn">
+                <button class="btn-primary" onclick="speakClassroomSection()" id="speakClassroomBtn">
                   <i class="fas fa-volume-up"></i> Read Aloud
                 </button>
-                <button class="btn-primary" onclick="stopSpeaking()" id="stopBtn" style="display: none;">
+                <button class="btn-primary" onclick="stopSpeaking()" id="stopClassroomBtn" style="display: none;">
                   <i class="fas fa-stop"></i> Stop
                 </button>
                 <button class="btn-primary" ${currentSection === sections.length - 1 ? 'disabled' : ''} onclick="changeClassroomSection(${currentSection + 1})">
@@ -942,6 +951,15 @@
                 <i class="fas fa-exclamation-triangle"></i> Using available content (${sections.length} sections)
               </div>
             `;
+            
+            // Store current section content globally for audio function
+            window.currentClassroomSection = {
+              title: sectionTitle,
+              content: sectionContent,
+              sectionIndex: currentSection,
+              totalSections: sections.length
+            };
+            
             animateText(sectionContent);
           }
 
@@ -981,20 +999,29 @@
               <button class="btn-primary" ${currentSection === 0 ? 'disabled' : ''} onclick="changeClassroomSection(${currentSection - 1})">
                 <i class="fas fa-chevron-left"></i> Previous
               </button>
-              <button class="btn-primary" onclick="speakText('${sectionContent.replace(/'/g, "\\'")}')" id="speakBtn">
+              <button class="btn-primary" onclick="speakClassroomSection()" id="speakClassroomBtn">
                 <i class="fas fa-volume-up"></i> Read Aloud
               </button>
-              <button class="btn-primary" onclick="stopSpeaking()" id="stopBtn" style="display: none;">
+              <button class="btn-primary" onclick="stopSpeaking()" id="stopClassroomBtn" style="display: none;">
                 <i class="fas fa-stop"></i> Stop
               </button>
               <button class="btn-primary" ${currentSection === sections.length - 1 ? 'disabled' : ''} onclick="changeClassroomSection(${currentSection + 1})">
                 Next <i class="fas fa-chevron-right"></i>
               </button>
             </div>
-            <div style="margin-top: 1rem; text-align: center; color: #dc3545; font-size: 0.9rem;">
-              <i class="fas fa-exclamation-circle"></i> Using fallback content (${sections.length} sections)
+            <div style="margin-top: 1rem; text-align: center; color: #ffc107; font-size: 0.9rem;">
+              <i class="fas fa-exclamation-triangle"></i> Using available content (${sections.length} sections)
             </div>
           `;
+          
+          // Store current section content globally for audio function
+          window.currentClassroomSection = {
+            title: sectionTitle,
+            content: sectionContent,
+            sectionIndex: currentSection,
+            totalSections: sections.length
+          };
+          
           animateText(sectionContent);
         }
 
@@ -1038,6 +1065,9 @@
               <button class="btn-primary" onclick="downloadFullText()">
                 <i class="fas fa-file-text"></i> Download Full Text
               </button>
+              <button class="btn-primary" onclick="downloadClassroomContent()">
+                <i class="fas fa-chalkboard-teacher"></i> Download Classroom Content
+              </button>
             </div>
           </div>
 
@@ -1057,6 +1087,16 @@
                   </label>
                 `;
               }).join('')}
+            </div>
+          </div>
+          
+          <div style="margin: 1.5rem 0;">
+            <h4 style="color: #667eea; margin-bottom: 1rem;">Classroom Content Summary:</h4>
+            <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; border-left: 4px solid #667eea;">
+              <p style="margin-bottom: 0.5rem;"><strong>Total Sections:</strong> ${sections.length}</p>
+              <p style="margin-bottom: 0.5rem;"><strong>Content Type:</strong> ${hasFullText ? 'Full Paper Content' : 'Abstract-Based Content'}</p>
+              <p style="margin-bottom: 0.5rem;"><strong>Word Count:</strong> ${hasFullText ? selectedPaper.wordCount : 'Abstract only'}</p>
+              <p style="margin-bottom: 0;"><strong>Format:</strong> Classroom-ready sections with titles and content</p>
             </div>
           </div>
         </div>
@@ -1854,6 +1894,47 @@ results = implementation.analyze_content(your_data)
       URL.revokeObjectURL(url);
     }
 
+    function downloadClassroomContent() {
+      const hasFullText = selectedPaper.fullText && selectedPaper.fullText.length > 500;
+      const sections = hasFullText && selectedPaper.sections ? selectedPaper.sections : splitIntoSection(selectedPaper.summary);
+      
+      let content = `CLASSROOM CONTENT - ${selectedPaper.title}\n`;
+      content += `==========================================\n\n`;
+      content += `Title: ${selectedPaper.title}\n`;
+      content += `Authors: ${selectedPaper.authors}\n`;
+      content += `Published: ${formatDate(selectedPaper.published)}\n`;
+      content += `Content Type: ${hasFullText ? 'Full Paper Content' : 'Abstract-Based Content'}\n`;
+      content += `Total Sections: ${sections.length}\n`;
+      content += `Word Count: ${hasFullText ? selectedPaper.wordCount : 'Abstract only'}\n\n`;
+      
+      content += `CLASSROOM SECTIONS:\n`;
+      content += `==================\n\n`;
+      
+      sections.forEach((section, index) => {
+        content += `SECTION ${index + 1}: ${section.title}\n`;
+        content += `----------------------------------------\n`;
+        content += `${section.content}\n\n`;
+      });
+      
+      content += `\nCLASSROOM NOTES:\n`;
+      content += `===============\n`;
+      content += `- This content is structured for classroom presentation\n`;
+      content += `- Each section can be used as a separate lesson or topic\n`;
+      content += `- Content includes both titles and detailed explanations\n`;
+      content += `- Suitable for educational use and research presentations\n\n`;
+      
+      content += `Generated by: Arxiv Research Pilot\n`;
+      content += `Date: ${new Date().toLocaleDateString()}\n`;
+      
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${selectedPaper.title.replace(/[^a-zA-Z0-9]/g, '_')}_classroom_content.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
     function askAI() {
       const input = document.getElementById('aiInput');
       const question = input.value.trim();
@@ -2234,6 +2315,20 @@ console.log('This would create a working application based on the research paper
         // Start character highlighting
         startCharacterHighlighting('impactSection', window.demystifiedContent.impact);
         speakText(window.demystifiedContent.impact, 'speakImpactBtn');
+      }
+    }
+
+    // Classroom Mode audio function
+    function speakClassroomSection() {
+      if (window.currentClassroomSection && window.currentClassroomSection.content) {
+        const section = window.currentClassroomSection;
+        const fullText = `Section ${section.sectionIndex + 1} of ${section.totalSections}: ${section.title}. ${section.content}`;
+        
+        // Start character highlighting for the animated text area
+        startCharacterHighlighting('animatedText', section.content);
+        
+        // Use the enhanced speakText function
+        speakText(fullText, 'speakClassroomBtn');
       }
     }
 
