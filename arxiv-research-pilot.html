@@ -1957,11 +1957,23 @@ console.log('This would create a working application based on the research paper
           </div>
           
           <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
-            <button class="btn-primary" onclick="speakText('${demystifiedContent.bigPicture.replace(/'/g, "\\'")}')">
+            <button class="btn-primary" onclick="speakDemystificationText('${demystifiedContent.bigPicture.replace(/'/g, "\\'").replace(/"/g, '\\"')}', 'bigPicture')" id="speakBigPictureBtn">
               <i class="fas fa-volume-up"></i> Listen to Big Picture
             </button>
-            <button class="btn-primary" onclick="speakText('${demystifiedContent.documentary.replace(/'/g, "\\'")}')">
+            <button class="btn-primary" onclick="stopSpeaking()" id="stopBigPictureBtn" style="display: none;">
+              <i class="fas fa-stop"></i> Stop Big Picture
+            </button>
+            <button class="btn-primary" onclick="speakDemystificationText('${demystifiedContent.documentary.replace(/'/g, "\\'").replace(/"/g, '\\"')}', 'documentary')" id="speakDocumentaryBtn">
               <i class="fas fa-volume-up"></i> Listen to Documentary
+            </button>
+            <button class="btn-primary" onclick="stopSpeaking()" id="stopDocumentaryBtn" style="display: none;">
+              <i class="fas fa-stop"></i> Stop Documentary
+            </button>
+            <button class="btn-primary" onclick="speakDemystificationText('${demystifiedContent.impact.replace(/'/g, "\\'").replace(/"/g, '\\"')}', 'impact')" id="speakImpactBtn">
+              <i class="fas fa-volume-up"></i> Listen to Why It Matters
+            </button>
+            <button class="btn-primary" onclick="stopSpeaking()" id="stopImpactBtn" style="display: none;">
+              <i class="fas fa-stop"></i> Stop Impact
             </button>
             <button class="btn-primary" onclick="window.open('${selectedPaper.pdfUrl}', '_blank')">
               <i class="fas fa-file-pdf"></i> Read Full Paper
@@ -2129,6 +2141,44 @@ console.log('This would create a working application based on the research paper
       that we haven't even imagined yet. For students and researchers, this work opens up new possibilities for future 
       projects and discoveries. For society as a whole, it contributes to the ongoing effort to create technology that 
       truly serves human needs and enhances our capabilities.`;
+    }
+
+    // Enhanced speech function for demystification content
+    function speakDemystificationText(text, section) {
+      // Stop any existing speech first
+      if (currentSpeech) {
+        stopSpeaking();
+      }
+
+      // Create new speech
+      currentSpeech = new SpeechSynthesisUtterance(text);
+      currentSpeech.rate = 0.9;
+      currentSpeech.pitch = 1;
+      currentSpeech.volume = 1;
+
+      // Show stop button and hide speak button for the specific section
+      const speakBtn = document.getElementById(`speak${section.charAt(0).toUpperCase() + section.slice(1)}Btn`);
+      const stopBtn = document.getElementById(`stop${section.charAt(0).toUpperCase() + section.slice(1)}Btn`);
+      if (speakBtn) speakBtn.style.display = 'none';
+      if (stopBtn) stopBtn.style.display = 'inline-block';
+
+      // Handle speech end
+      currentSpeech.onend = function() {
+        currentSpeech = null;
+        if (speakBtn) speakBtn.style.display = 'inline-block';
+        if (stopBtn) stopBtn.style.display = 'none';
+      };
+
+      // Handle speech error
+      currentSpeech.onerror = function() {
+        currentSpeech = null;
+        if (speakBtn) speakBtn.style.display = 'inline-block';
+        if (stopBtn) stopBtn.style.display = 'none';
+        console.error('Speech synthesis error');
+      };
+
+      // Start speaking
+      speechSynthesis.speak(currentSpeech);
     }
   </script>
 </body>
