@@ -632,7 +632,7 @@
           <div class="paper-summary">${paper.summary}</div>
           <div class="paper-meta">
             <span class="paper-date">${formatDate(paper.published)}</span>
-            <a href="${paper.pdfUrl}" target="_blank" class="paper-link" onclick="event.stopPropagation()">
+            <a href="${paper.pdfUrl}" class="paper-link" onclick="event.stopPropagation()">
               <i class="fas fa-external-link-alt"></i> PDF
             </a>
           </div>
@@ -1723,7 +1723,7 @@ results = implementation.analyze_content(your_data)
     // Enhanced speech functions with stop functionality
     let currentSpeech = null;
 
-    function speakText(text) {
+    function speakText(text, buttonId = null) {
       // Stop any existing speech first
       if (currentSpeech) {
         stopSpeaking();
@@ -1736,8 +1736,18 @@ results = implementation.analyze_content(your_data)
       currentSpeech.volume = 1;
 
       // Show stop button and hide speak button
-      const speakBtn = document.getElementById('speakBtn');
-      const stopBtn = document.getElementById('stopBtn');
+      let speakBtn, stopBtn;
+      
+      if (buttonId) {
+        // For specific button IDs (like in Demystification mode)
+        speakBtn = document.getElementById(buttonId);
+        stopBtn = document.getElementById(buttonId.replace('speak', 'stop'));
+      } else {
+        // Default behavior for general speak buttons
+        speakBtn = document.getElementById('speakBtn');
+        stopBtn = document.getElementById('stopBtn');
+      }
+      
       if (speakBtn) speakBtn.style.display = 'none';
       if (stopBtn) stopBtn.style.display = 'inline-block';
 
@@ -1766,11 +1776,21 @@ results = implementation.analyze_content(your_data)
         currentSpeech = null;
       }
       
-      // Show speak button and hide stop button
-      const speakBtn = document.getElementById('speakBtn');
-      const stopBtn = document.getElementById('stopBtn');
-      if (speakBtn) speakBtn.style.display = 'inline-block';
-      if (stopBtn) stopBtn.style.display = 'none';
+      // Show all speak buttons and hide all stop buttons
+      const speakButtons = document.querySelectorAll('[id^="speak"]');
+      const stopButtons = document.querySelectorAll('[id^="stop"]');
+      
+      speakButtons.forEach(btn => {
+        if (btn.id.startsWith('speak')) {
+          btn.style.display = 'inline-block';
+        }
+      });
+      
+      stopButtons.forEach(btn => {
+        if (btn.id.startsWith('stop')) {
+          btn.style.display = 'none';
+        }
+      });
     }
 
     function downloadPowerPoint() {
@@ -1957,19 +1977,19 @@ console.log('This would create a working application based on the research paper
           </div>
           
           <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
-            <button class="btn-primary" onclick="speakDemystificationText('${demystifiedContent.bigPicture.replace(/'/g, "\\'").replace(/"/g, '\\"')}', 'bigPicture')" id="speakBigPictureBtn">
+            <button class="btn-primary" onclick="speakText('${demystifiedContent.bigPicture.replace(/'/g, "\\'").replace(/"/g, '\\"')}', 'speakBigPictureBtn')" id="speakBigPictureBtn">
               <i class="fas fa-volume-up"></i> Listen to Big Picture
             </button>
             <button class="btn-primary" onclick="stopSpeaking()" id="stopBigPictureBtn" style="display: none;">
               <i class="fas fa-stop"></i> Stop Big Picture
             </button>
-            <button class="btn-primary" onclick="speakDemystificationText('${demystifiedContent.documentary.replace(/'/g, "\\'").replace(/"/g, '\\"')}', 'documentary')" id="speakDocumentaryBtn">
+            <button class="btn-primary" onclick="speakText('${demystifiedContent.documentary.replace(/'/g, "\\'").replace(/"/g, '\\"')}', 'speakDocumentaryBtn')" id="speakDocumentaryBtn">
               <i class="fas fa-volume-up"></i> Listen to Documentary
             </button>
             <button class="btn-primary" onclick="stopSpeaking()" id="stopDocumentaryBtn" style="display: none;">
               <i class="fas fa-stop"></i> Stop Documentary
             </button>
-            <button class="btn-primary" onclick="speakDemystificationText('${demystifiedContent.impact.replace(/'/g, "\\'").replace(/"/g, '\\"')}', 'impact')" id="speakImpactBtn">
+            <button class="btn-primary" onclick="speakText('${demystifiedContent.impact.replace(/'/g, "\\'").replace(/"/g, '\\"')}', 'speakImpactBtn')" id="speakImpactBtn">
               <i class="fas fa-volume-up"></i> Listen to Why It Matters
             </button>
             <button class="btn-primary" onclick="stopSpeaking()" id="stopImpactBtn" style="display: none;">
@@ -2141,44 +2161,6 @@ console.log('This would create a working application based on the research paper
       that we haven't even imagined yet. For students and researchers, this work opens up new possibilities for future 
       projects and discoveries. For society as a whole, it contributes to the ongoing effort to create technology that 
       truly serves human needs and enhances our capabilities.`;
-    }
-
-    // Enhanced speech function for demystification content
-    function speakDemystificationText(text, section) {
-      // Stop any existing speech first
-      if (currentSpeech) {
-        stopSpeaking();
-      }
-
-      // Create new speech
-      currentSpeech = new SpeechSynthesisUtterance(text);
-      currentSpeech.rate = 0.9;
-      currentSpeech.pitch = 1;
-      currentSpeech.volume = 1;
-
-      // Show stop button and hide speak button for the specific section
-      const speakBtn = document.getElementById(`speak${section.charAt(0).toUpperCase() + section.slice(1)}Btn`);
-      const stopBtn = document.getElementById(`stop${section.charAt(0).toUpperCase() + section.slice(1)}Btn`);
-      if (speakBtn) speakBtn.style.display = 'none';
-      if (stopBtn) stopBtn.style.display = 'inline-block';
-
-      // Handle speech end
-      currentSpeech.onend = function() {
-        currentSpeech = null;
-        if (speakBtn) speakBtn.style.display = 'inline-block';
-        if (stopBtn) stopBtn.style.display = 'none';
-      };
-
-      // Handle speech error
-      currentSpeech.onerror = function() {
-        currentSpeech = null;
-        if (speakBtn) speakBtn.style.display = 'inline-block';
-        if (stopBtn) stopBtn.style.display = 'none';
-        console.error('Speech synthesis error');
-      };
-
-      // Start speaking
-      speechSynthesis.speak(currentSpeech);
     }
   </script>
 </body>
