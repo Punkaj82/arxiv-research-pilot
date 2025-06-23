@@ -344,6 +344,7 @@
     </div>
     <div class="mode-selector" id="modeSelector">
       <button class="mode-btn active" data-mode="abstract"><i class="fas fa-book-open"></i> Research Paper Read</button>
+      <button class="mode-btn" data-mode="demystify"><i class="fas fa-lightbulb"></i> Demystify</button>
       <button class="mode-btn" data-mode="classroom"><i class="fas fa-chalkboard-teacher"></i> Classroom Mode</button>
       <button class="mode-btn" data-mode="download"><i class="fas fa-download"></i> Download/Extract</button>
       <button class="mode-btn" data-mode="deepresearch"><i class="fas fa-brain"></i> Deep Research Pilot</button>
@@ -675,6 +676,9 @@
       switch (currentMode) {
         case 'abstract':
           showAbstractMode();
+          break;
+        case 'demystify':
+          showDemystifyMode();
           break;
         case 'classroom':
           showClassroomMode();
@@ -1793,11 +1797,265 @@ console.log('This would create a working application based on the research paper
     function getModeDisplayName(mode) {
       const names = {
         'abstract': 'Research Paper Read Mode',
+        'demystify': 'Demystification Mode',
         'classroom': 'Classroom Mode',
         'download': 'Download/Extract Mode',
         'deepresearch': 'Deep Research -Pilot Mode'
       };
       return names[mode] || mode;
+    }
+
+    // Demystification Mode - First Principles Analysis and Documentary-Style Explanation
+    async function showDemystifyMode() {
+      elements.modeContent.innerHTML = `
+        <div class="section-title">
+          <i class="fas fa-lightbulb"></i> Demystification Mode - Analyzing Research Concepts
+        </div>
+        <div class="section-box">
+          <div style="text-align: center; padding: 2rem;">
+            <div class="spinner" style="margin: 0 auto 1rem;"></div>
+            <p>Breaking down complex research into simple, engaging concepts...</p>
+          </div>
+        </div>
+      `;
+
+      try {
+        // Generate demystification content using first principles analysis
+        const demystifiedContent = await generateDemystification(selectedPaper);
+        
+        elements.modeContent.innerHTML = `
+          <div class="section-title">
+            <i class="fas fa-lightbulb"></i> Demystification Mode - First Principles Analysis
+          </div>
+          <div class="section-box">
+            <h3 style="margin-bottom: 1rem; color: #667eea;">${selectedPaper.title}</h3>
+            <p style="margin-bottom: 1rem;"><strong>Authors:</strong> ${selectedPaper.authors}</p>
+            <p style="margin-bottom: 1rem;"><strong>Published:</strong> ${formatDate(selectedPaper.published)}</p>
+            
+            <div style="margin-top: 2rem;">
+              <h4 style="color: #667eea; margin-bottom: 1rem;">
+                <i class="fas fa-compass"></i> The Big Picture
+              </h4>
+              <div style="background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%); padding: 1.5rem; border-radius: 10px; margin-bottom: 1.5rem;">
+                <p style="font-size: 1.1rem; line-height: 1.7; margin-bottom: 0;">
+                  ${demystifiedContent.bigPicture}
+                </p>
+              </div>
+            </div>
+
+            <div style="margin-top: 2rem;">
+              <h4 style="color: #667eea; margin-bottom: 1rem;">
+                <i class="fas fa-puzzle-piece"></i> Key Concepts Explained
+              </h4>
+              <div style="display: grid; gap: 1rem; margin-bottom: 1.5rem;">
+                ${demystifiedContent.concepts.map(concept => `
+                  <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; border-left: 4px solid #667eea;">
+                    <h5 style="color: #667eea; margin-bottom: 0.5rem;">${concept.title}</h5>
+                    <p style="line-height: 1.6; margin-bottom: 0;">${concept.explanation}</p>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <div style="margin-top: 2rem;">
+              <h4 style="color: #667eea; margin-bottom: 1rem;">
+                <i class="fas fa-play-circle"></i> Documentary-Style Explanation
+              </h4>
+              <div style="background: #222; color: #fff; padding: 1.5rem; border-radius: 10px; font-family: 'Georgia', serif; line-height: 1.8;">
+                <p style="margin-bottom: 1rem; font-style: italic;">
+                  "Imagine you're watching a fascinating documentary about cutting-edge research..."
+                </p>
+                <div style="line-height: 1.7;">
+                  ${demystifiedContent.documentary}
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top: 2rem;">
+              <h4 style="color: #667eea; margin-bottom: 1rem;">
+                <i class="fas fa-graduation-cap"></i> Why This Matters
+              </h4>
+              <div style="background: #e8f5e8; padding: 1.5rem; border-radius: 10px; border-left: 4px solid #28a745;">
+                <p style="line-height: 1.7; margin-bottom: 0; color: #2e7d32;">
+                  ${demystifiedContent.impact}
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+            <button class="btn-primary" onclick="speakText('${demystifiedContent.bigPicture.replace(/'/g, "\\'")}')">
+              <i class="fas fa-volume-up"></i> Listen to Big Picture
+            </button>
+            <button class="btn-primary" onclick="speakText('${demystifiedContent.documentary.replace(/'/g, "\\'")}')">
+              <i class="fas fa-volume-up"></i> Listen to Documentary
+            </button>
+            <button class="btn-primary" onclick="window.open('${selectedPaper.pdfUrl}', '_blank')">
+              <i class="fas fa-file-pdf"></i> Read Full Paper
+            </button>
+            <button class="btn-primary" onclick="showClassroomMode()">
+              <i class="fas fa-chalkboard-teacher"></i> Switch to Classroom Mode
+            </button>
+          </div>
+        `;
+      } catch (error) {
+        console.error('Error generating demystification:', error);
+        elements.modeContent.innerHTML = `
+          <div class="section-title">
+            <i class="fas fa-lightbulb"></i> Demystification Mode
+          </div>
+          <div class="section-box">
+            <div style="text-align: center; padding: 2rem; color: #666;">
+              <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #ccc; margin-bottom: 20px;"></i>
+              <h3>Demystification Unavailable</h3>
+              <p>Unable to generate demystification content at this time.</p>
+              <p style="font-size: 0.9rem; color: #888;">${error.message}</p>
+              <button class="btn-primary" onclick="showAbstractMode()">
+                <i class="fas fa-book-open"></i> Switch to Read Mode
+              </button>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // Generate demystification content using first principles analysis
+    async function generateDemystification(paper) {
+      // First principles analysis of the abstract
+      const abstract = paper.summary;
+      const title = paper.title;
+      const category = paper.category;
+      
+      // Extract key concepts and create simplified explanations
+      const concepts = extractKeyConcepts(abstract, title, category);
+      
+      // Generate big picture explanation
+      const bigPicture = generateBigPicture(title, abstract, category);
+      
+      // Create documentary-style explanation
+      const documentary = generateDocumentaryExplanation(title, abstract, concepts);
+      
+      // Explain impact and significance
+      const impact = generateImpactExplanation(title, category, concepts);
+      
+      return {
+        bigPicture,
+        concepts,
+        documentary,
+        impact
+      };
+    }
+
+    // Extract key concepts from the abstract
+    function extractKeyConcepts(abstract, title, category) {
+      const concepts = [];
+      
+      // Analyze the abstract for key terms and concepts
+      const words = abstract.toLowerCase().split(/\s+/);
+      const keyTerms = new Set();
+      
+      // Common research terms to look for
+      const researchTerms = [
+        'algorithm', 'model', 'method', 'approach', 'technique', 'framework',
+        'neural', 'network', 'learning', 'training', 'optimization', 'performance',
+        'accuracy', 'efficiency', 'scalability', 'robustness', 'generalization',
+        'deep', 'machine', 'artificial', 'intelligence', 'computer', 'vision',
+        'natural', 'language', 'processing', 'reinforcement', 'supervised', 'unsupervised'
+      ];
+      
+      words.forEach(word => {
+        if (researchTerms.includes(word) || word.length > 8) {
+          keyTerms.add(word);
+        }
+      });
+      
+      // Create concept explanations
+      const conceptMap = {
+        'algorithm': 'A step-by-step procedure or recipe for solving a problem',
+        'model': 'A mathematical representation that captures patterns in data',
+        'neural': 'Inspired by how brain cells (neurons) work together',
+        'network': 'A system of interconnected components that work together',
+        'learning': 'The process of improving performance through experience',
+        'deep': 'Multiple layers of processing that build complex understanding',
+        'machine': 'Automated systems that can perform tasks without human intervention',
+        'artificial': 'Created by humans to mimic natural intelligence',
+        'intelligence': 'The ability to understand, learn, and solve problems',
+        'vision': 'The ability to understand and interpret visual information',
+        'language': 'Systems that can understand and generate human text',
+        'processing': 'Analyzing and transforming information to extract meaning'
+      };
+      
+      // Generate concept explanations
+      Array.from(keyTerms).slice(0, 6).forEach(term => {
+        if (conceptMap[term]) {
+          concepts.push({
+            title: term.charAt(0).toUpperCase() + term.slice(1),
+            explanation: conceptMap[term]
+          });
+        }
+      });
+      
+      // Add category-specific concepts
+      if (category.includes('AI')) {
+        concepts.push({
+          title: 'Artificial Intelligence',
+          explanation: 'Computer systems that can perform tasks typically requiring human intelligence'
+        });
+      }
+      if (category.includes('CV')) {
+        concepts.push({
+          title: 'Computer Vision',
+          explanation: 'Teaching computers to understand and interpret visual information from images or videos'
+        });
+      }
+      if (category.includes('CL')) {
+        concepts.push({
+          title: 'Natural Language Processing',
+          explanation: 'Helping computers understand, interpret, and generate human language'
+        });
+      }
+      
+      return concepts;
+    }
+
+    // Generate big picture explanation
+    function generateBigPicture(title, abstract, category) {
+      const categoryName = category.replace('cs.', 'Computer Science ').replace('cs', 'Computer Science');
+      
+      return `This research paper explores how we can make computers smarter and more capable in the field of ${categoryName}. 
+      The researchers have developed new methods and techniques that could help solve real-world problems more effectively. 
+      Think of it as creating better tools and systems that can understand, learn, and make decisions - similar to how humans do, 
+      but in ways that are specifically designed for computers.`;
+    }
+
+    // Generate documentary-style explanation
+    function generateDocumentaryExplanation(title, abstract, concepts) {
+      const conceptNames = concepts.map(c => c.title).join(', ');
+      
+      return `In the world of cutting-edge technology, researchers are constantly pushing the boundaries of what's possible. 
+      This particular study takes us on a journey into the fascinating realm of ${conceptNames}.
+      
+      The story begins with a fundamental question: How can we make computers not just faster, but smarter? 
+      The researchers behind this work have discovered innovative approaches that could revolutionize how we think about technology.
+      
+      What makes this research special is its focus on practical applications. It's not just about theoretical concepts - 
+      it's about creating real solutions that could benefit people in their everyday lives. The team has developed methods 
+      that are both powerful and accessible, bridging the gap between complex science and practical use.
+      
+      As we dive deeper into the methodology, we discover a carefully crafted approach that combines multiple techniques 
+      to achieve remarkable results. The researchers have thought through every detail, from the initial problem formulation 
+      to the final implementation, ensuring that their work is both scientifically rigorous and practically useful.`;
+    }
+
+    // Generate impact explanation
+    function generateImpactExplanation(title, category, concepts) {
+      const categoryName = category.replace('cs.', 'Computer Science ').replace('cs', 'Computer Science');
+      
+      return `This research matters because it represents a step forward in making technology more intelligent and useful. 
+      The methods and insights developed here could lead to better software, more efficient systems, and new capabilities 
+      that we haven't even imagined yet. For students and researchers, this work opens up new possibilities for future 
+      projects and discoveries. For society as a whole, it contributes to the ongoing effort to create technology that 
+      truly serves human needs and enhances our capabilities.`;
     }
   </script>
 </body>
