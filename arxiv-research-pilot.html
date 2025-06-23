@@ -162,13 +162,13 @@
     /* Character highlighting animations */
     @keyframes pulse {
       0% { transform: scale(1); }
-      50% { transform: scale(1.2); }
+      50% { transform: scale(1.15); }
       100% { transform: scale(1.1); }
     }
     
     @keyframes glow {
       0% { box-shadow: 0 0 5px rgba(255, 235, 59, 0.5); }
-      50% { box-shadow: 0 0 15px rgba(255, 235, 59, 0.8); }
+      50% { box-shadow: 0 0 12px rgba(255, 235, 59, 0.8); }
       100% { box-shadow: 0 0 8px rgba(255, 235, 59, 0.7); }
     }
     
@@ -2275,33 +2275,34 @@ console.log('This would create a working application based on the research paper
       const textElement = section.querySelector('p') || section;
       const originalText = textElement.textContent || textElement.innerText;
       
-      // Split text into characters
-      const characters = originalText.split('');
+      // Split text into words for better speech synchronization
+      const words = originalText.split(/\s+/);
       let currentIndex = 0;
       
-      // Calculate highlighting speed based on speech rate (0.9) and text length
+      // Calculate highlighting speed to match speech rate more accurately
       const speechRate = 0.9;
-      const wordsPerMinute = 150 * speechRate; // Average speaking rate
-      const charactersPerSecond = (wordsPerMinute * 5) / 60; // Approximate chars per second
-      const highlightInterval = 1000 / charactersPerSecond; // Milliseconds per character
+      const wordsPerMinute = 180 * speechRate; // Faster average speaking rate
+      const wordsPerSecond = wordsPerMinute / 60;
+      const highlightInterval = Math.max(1000 / wordsPerSecond, 20); // Milliseconds per word
       
       // Create the highlighted text structure
-      const highlightedText = characters.map((char, index) => {
+      const highlightedWords = words.map((word, index) => {
         const span = document.createElement('span');
-        span.textContent = char;
-        span.style.transition = 'all 0.2s ease';
+        span.textContent = word + ' '; // Add space after each word
+        span.style.transition = 'all 0.1s ease';
         span.style.position = 'relative';
+        span.style.display = 'inline-block';
         span.dataset.index = index;
         return span;
       });
       
       // Replace the text content
       textElement.innerHTML = '';
-      highlightedText.forEach(span => textElement.appendChild(span));
+      highlightedWords.forEach(span => textElement.appendChild(span));
       
-      // Highlight characters as audio progresses
+      // Highlight words as audio progresses
       const interval = setInterval(() => {
-        // Remove previous highlight with fade effect
+        // Remove previous highlight
         if (currentIndex > 0) {
           const prevSpan = textElement.querySelector(`[data-index="${currentIndex - 1}"]`);
           if (prevSpan) {
@@ -2315,21 +2316,19 @@ console.log('This would create a working application based on the research paper
           }
         }
         
-        // Add current highlight with enhanced effects
-        if (currentIndex < characters.length) {
+        // Add current highlight
+        if (currentIndex < words.length) {
           const currentSpan = textElement.querySelector(`[data-index="${currentIndex}"]`);
           if (currentSpan) {
             currentSpan.style.backgroundColor = '#ffeb3b';
             currentSpan.style.color = '#000';
             currentSpan.style.fontWeight = 'bold';
-            currentSpan.style.borderRadius = '3px';
-            currentSpan.style.padding = '2px 3px';
+            currentSpan.style.borderRadius = '4px';
+            currentSpan.style.padding = '2px 4px';
             currentSpan.style.boxShadow = '0 0 8px rgba(255, 235, 59, 0.7)';
-            currentSpan.style.transform = 'scale(1.1)';
+            currentSpan.style.transform = 'scale(1.05)';
             currentSpan.style.zIndex = '10';
-            
-            // Add a subtle pulse effect
-            currentSpan.style.animation = 'pulse 0.5s ease-in-out';
+            currentSpan.style.animation = 'pulse 0.3s ease-in-out';
           }
           currentIndex++;
         } else {
@@ -2337,7 +2336,7 @@ console.log('This would create a working application based on the research paper
           clearInterval(interval);
           // Clean up after a delay
           setTimeout(() => {
-            highlightedText.forEach(span => {
+            highlightedWords.forEach(span => {
               span.style.backgroundColor = '';
               span.style.color = '';
               span.style.fontWeight = '';
@@ -2347,9 +2346,9 @@ console.log('This would create a working application based on the research paper
               span.style.transform = '';
               span.style.animation = '';
             });
-          }, 3000);
+          }, 2000);
         }
-      }, Math.max(highlightInterval, 30)); // Minimum 30ms for smooth animation
+      }, highlightInterval);
       
       // Store the interval for cleanup
       window.currentHighlightInterval = interval;
