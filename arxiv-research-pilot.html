@@ -158,6 +158,20 @@
       font-size: 1.2rem;
       margin-bottom: 0.3rem;
     }
+    
+    /* Character highlighting animations */
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1.1); }
+    }
+    
+    @keyframes glow {
+      0% { box-shadow: 0 0 5px rgba(255, 235, 59, 0.5); }
+      50% { box-shadow: 0 0 15px rgba(255, 235, 59, 0.8); }
+      100% { box-shadow: 0 0 8px rgba(255, 235, 59, 0.7); }
+    }
+    
     .search-section {
       background: transparent;
       border-radius: 0;
@@ -1753,6 +1767,8 @@ results = implementation.analyze_content(your_data)
         currentSpeech = null;
         if (speakBtn) speakBtn.style.display = 'inline-block';
         if (stopBtn) stopBtn.style.display = 'none';
+        // Stop character highlighting when speech ends
+        stopCharacterHighlighting();
       };
 
       // Handle speech error
@@ -1761,6 +1777,8 @@ results = implementation.analyze_content(your_data)
         if (speakBtn) speakBtn.style.display = 'inline-block';
         if (stopBtn) stopBtn.style.display = 'none';
         console.error('Speech synthesis error');
+        // Stop character highlighting when speech errors
+        stopCharacterHighlighting();
       };
 
       // Start speaking
@@ -1791,6 +1809,9 @@ results = implementation.analyze_content(your_data)
       
       // Remove all highlights when audio stops
       removeAllHighlights();
+      
+      // Stop character highlighting
+      stopCharacterHighlighting();
     }
 
     function downloadPowerPoint() {
@@ -2177,6 +2198,8 @@ console.log('This would create a working application based on the research paper
       if (window.demystifiedContent && window.demystifiedContent.bigPicture) {
         // Scroll to and highlight the Big Picture section
         scrollToSection('bigPictureSection', '#e3f2fd');
+        // Start character highlighting
+        startCharacterHighlighting('bigPictureSection', window.demystifiedContent.bigPicture);
         speakText(window.demystifiedContent.bigPicture, 'speakBigPictureBtn');
       }
     }
@@ -2188,6 +2211,8 @@ console.log('This would create a working application based on the research paper
         const conceptsText = window.demystifiedContent.concepts.map(concept => 
           `${concept.title}: ${concept.explanation}`
         ).join('. ');
+        // Start character highlighting
+        startCharacterHighlighting('keyConceptsSection', conceptsText);
         speakText(conceptsText, 'speakKeyConceptsBtn');
       }
     }
@@ -2196,6 +2221,8 @@ console.log('This would create a working application based on the research paper
       if (window.demystifiedContent && window.demystifiedContent.documentary) {
         // Scroll to and highlight the Documentary section
         scrollToSection('documentarySection', '#333');
+        // Start character highlighting
+        startCharacterHighlighting('documentarySection', window.demystifiedContent.documentary);
         speakText(window.demystifiedContent.documentary, 'speakDocumentaryBtn');
       }
     }
@@ -2204,6 +2231,8 @@ console.log('This would create a working application based on the research paper
       if (window.demystifiedContent && window.demystifiedContent.impact) {
         // Scroll to and highlight the Impact section
         scrollToSection('impactSection', '#c8e6c9');
+        // Start character highlighting
+        startCharacterHighlighting('impactSection', window.demystifiedContent.impact);
         speakText(window.demystifiedContent.impact, 'speakImpactBtn');
       }
     }
@@ -2235,6 +2264,117 @@ console.log('This would create a working application based on the research paper
           }
         }, 5000); // Remove highlight after 5 seconds
       }
+    }
+
+    // Character-by-character highlighting function
+    function startCharacterHighlighting(sectionId, text) {
+      const section = document.getElementById(sectionId);
+      if (!section) return;
+      
+      // Find the text content within the section
+      const textElement = section.querySelector('p') || section;
+      const originalText = textElement.textContent || textElement.innerText;
+      
+      // Split text into characters
+      const characters = originalText.split('');
+      let currentIndex = 0;
+      
+      // Calculate highlighting speed based on speech rate (0.9) and text length
+      const speechRate = 0.9;
+      const wordsPerMinute = 150 * speechRate; // Average speaking rate
+      const charactersPerSecond = (wordsPerMinute * 5) / 60; // Approximate chars per second
+      const highlightInterval = 1000 / charactersPerSecond; // Milliseconds per character
+      
+      // Create the highlighted text structure
+      const highlightedText = characters.map((char, index) => {
+        const span = document.createElement('span');
+        span.textContent = char;
+        span.style.transition = 'all 0.2s ease';
+        span.style.position = 'relative';
+        span.dataset.index = index;
+        return span;
+      });
+      
+      // Replace the text content
+      textElement.innerHTML = '';
+      highlightedText.forEach(span => textElement.appendChild(span));
+      
+      // Highlight characters as audio progresses
+      const interval = setInterval(() => {
+        // Remove previous highlight with fade effect
+        if (currentIndex > 0) {
+          const prevSpan = textElement.querySelector(`[data-index="${currentIndex - 1}"]`);
+          if (prevSpan) {
+            prevSpan.style.backgroundColor = '';
+            prevSpan.style.color = '';
+            prevSpan.style.fontWeight = '';
+            prevSpan.style.borderRadius = '';
+            prevSpan.style.padding = '';
+            prevSpan.style.boxShadow = '';
+            prevSpan.style.transform = '';
+          }
+        }
+        
+        // Add current highlight with enhanced effects
+        if (currentIndex < characters.length) {
+          const currentSpan = textElement.querySelector(`[data-index="${currentIndex}"]`);
+          if (currentSpan) {
+            currentSpan.style.backgroundColor = '#ffeb3b';
+            currentSpan.style.color = '#000';
+            currentSpan.style.fontWeight = 'bold';
+            currentSpan.style.borderRadius = '3px';
+            currentSpan.style.padding = '2px 3px';
+            currentSpan.style.boxShadow = '0 0 8px rgba(255, 235, 59, 0.7)';
+            currentSpan.style.transform = 'scale(1.1)';
+            currentSpan.style.zIndex = '10';
+            
+            // Add a subtle pulse effect
+            currentSpan.style.animation = 'pulse 0.5s ease-in-out';
+          }
+          currentIndex++;
+        } else {
+          // Finished highlighting
+          clearInterval(interval);
+          // Clean up after a delay
+          setTimeout(() => {
+            highlightedText.forEach(span => {
+              span.style.backgroundColor = '';
+              span.style.color = '';
+              span.style.fontWeight = '';
+              span.style.borderRadius = '';
+              span.style.padding = '';
+              span.style.boxShadow = '';
+              span.style.transform = '';
+              span.style.animation = '';
+            });
+          }, 3000);
+        }
+      }, Math.max(highlightInterval, 30)); // Minimum 30ms for smooth animation
+      
+      // Store the interval for cleanup
+      window.currentHighlightInterval = interval;
+    }
+
+    // Stop character highlighting
+    function stopCharacterHighlighting() {
+      if (window.currentHighlightInterval) {
+        clearInterval(window.currentHighlightInterval);
+        window.currentHighlightInterval = null;
+      }
+      
+      // Remove all character highlights
+      const highlightedSpans = document.querySelectorAll('[data-index]');
+      highlightedSpans.forEach(span => {
+        span.style.backgroundColor = '';
+        span.style.color = '';
+        span.style.fontWeight = '';
+        span.style.borderRadius = '';
+        span.style.padding = '';
+        span.style.boxShadow = '';
+        span.style.transform = '';
+        span.style.animation = '';
+        span.style.zIndex = '';
+      });
     }
 
     // Remove all highlights
