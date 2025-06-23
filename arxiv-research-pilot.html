@@ -1788,6 +1788,9 @@ results = implementation.analyze_content(your_data)
           btn.style.display = 'none';
         }
       });
+      
+      // Remove all highlights when audio stops
+      removeAllHighlights();
     }
 
     function downloadPowerPoint() {
@@ -1926,7 +1929,7 @@ console.log('This would create a working application based on the research paper
               <h4 style="color: #667eea; margin-bottom: 1rem;">
                 <i class="fas fa-compass"></i> The Big Picture
               </h4>
-              <div style="background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%); padding: 1.5rem; border-radius: 10px; margin-bottom: 1.5rem;">
+              <div id="bigPictureSection" style="background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%); padding: 1.5rem; border-radius: 10px; margin-bottom: 1.5rem; transition: all 0.3s ease;">
                 <p style="font-size: 1.1rem; line-height: 1.7; margin-bottom: 0;">
                   ${demystifiedContent.bigPicture}
                 </p>
@@ -1937,7 +1940,7 @@ console.log('This would create a working application based on the research paper
               <h4 style="color: #667eea; margin-bottom: 1rem;">
                 <i class="fas fa-puzzle-piece"></i> Key Concepts Explained
               </h4>
-              <div style="display: grid; gap: 1rem; margin-bottom: 1.5rem;">
+              <div id="keyConceptsSection" style="display: grid; gap: 1rem; margin-bottom: 1.5rem; transition: all 0.3s ease;">
                 ${demystifiedContent.concepts.map(concept => `
                   <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; border-left: 4px solid #667eea;">
                     <h5 style="color: #667eea; margin-bottom: 0.5rem;">${concept.title}</h5>
@@ -1949,9 +1952,9 @@ console.log('This would create a working application based on the research paper
 
             <div style="margin-top: 2rem;">
               <h4 style="color: #667eea; margin-bottom: 1rem;">
-                <i class="fas fa-play-circle"></i> Documentary-Style Explanation
+                <i class="fas fa-play-circle"></i> Interactive and Immersive Documentary
               </h4>
-              <div style="background: #222; color: #fff; padding: 1.5rem; border-radius: 10px; font-family: 'Georgia', serif; line-height: 1.8;">
+              <div id="documentarySection" style="background: #222; color: #fff; padding: 1.5rem; border-radius: 10px; font-family: 'Georgia', serif; line-height: 1.8; transition: all 0.3s ease;">
                 <p style="margin-bottom: 1rem; font-style: italic;">
                   "Imagine you're watching a fascinating documentary about cutting-edge research..."
                 </p>
@@ -1965,7 +1968,7 @@ console.log('This would create a working application based on the research paper
               <h4 style="color: #667eea; margin-bottom: 1rem;">
                 <i class="fas fa-graduation-cap"></i> Why This Matters
               </h4>
-              <div style="background: #e8f5e8; padding: 1.5rem; border-radius: 10px; border-left: 4px solid #28a745;">
+              <div id="impactSection" style="background: #e8f5e8; padding: 1.5rem; border-radius: 10px; border-left: 4px solid #28a745; transition: all 0.3s ease;">
                 <p style="line-height: 1.7; margin-bottom: 0; color: #2e7d32;">
                   ${demystifiedContent.impact}
                 </p>
@@ -1979,6 +1982,12 @@ console.log('This would create a working application based on the research paper
             </button>
             <button class="btn-primary" onclick="stopSpeaking()" id="stopBigPictureBtn" style="display: none;">
               <i class="fas fa-stop"></i> Stop Big Picture
+            </button>
+            <button class="btn-primary" onclick="speakKeyConcepts()" id="speakKeyConceptsBtn">
+              <i class="fas fa-volume-up"></i> Listen to Key Concepts
+            </button>
+            <button class="btn-primary" onclick="stopSpeaking()" id="stopKeyConceptsBtn" style="display: none;">
+              <i class="fas fa-stop"></i> Stop Key Concepts
             </button>
             <button class="btn-primary" onclick="speakDocumentary()" id="speakDocumentaryBtn">
               <i class="fas fa-volume-up"></i> Listen to Documentary
@@ -2166,20 +2175,79 @@ console.log('This would create a working application based on the research paper
     // Demystification audio functions
     function speakBigPicture() {
       if (window.demystifiedContent && window.demystifiedContent.bigPicture) {
+        // Scroll to and highlight the Big Picture section
+        scrollToSection('bigPictureSection', '#e3f2fd');
         speakText(window.demystifiedContent.bigPicture, 'speakBigPictureBtn');
+      }
+    }
+
+    function speakKeyConcepts() {
+      if (window.demystifiedContent && window.demystifiedContent.concepts) {
+        // Scroll to and highlight the Key Concepts section
+        scrollToSection('keyConceptsSection', '#667eea');
+        const conceptsText = window.demystifiedContent.concepts.map(concept => 
+          `${concept.title}: ${concept.explanation}`
+        ).join('. ');
+        speakText(conceptsText, 'speakKeyConceptsBtn');
       }
     }
 
     function speakDocumentary() {
       if (window.demystifiedContent && window.demystifiedContent.documentary) {
+        // Scroll to and highlight the Documentary section
+        scrollToSection('documentarySection', '#333');
         speakText(window.demystifiedContent.documentary, 'speakDocumentaryBtn');
       }
     }
 
     function speakImpact() {
       if (window.demystifiedContent && window.demystifiedContent.impact) {
+        // Scroll to and highlight the Impact section
+        scrollToSection('impactSection', '#c8e6c9');
         speakText(window.demystifiedContent.impact, 'speakImpactBtn');
       }
+    }
+
+    // Auto-scroll and highlight function
+    function scrollToSection(sectionId, highlightColor) {
+      const section = document.getElementById(sectionId);
+      if (section) {
+        // Remove previous highlights
+        removeAllHighlights();
+        
+        // Add highlight to current section
+        section.style.boxShadow = `0 0 20px ${highlightColor}`;
+        section.style.transform = 'scale(1.02)';
+        section.style.border = `2px solid ${highlightColor}`;
+        
+        // Smooth scroll to section
+        section.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+        
+        // Remove highlight after audio ends
+        setTimeout(() => {
+          if (section) {
+            section.style.boxShadow = '';
+            section.style.transform = '';
+            section.style.border = '';
+          }
+        }, 5000); // Remove highlight after 5 seconds
+      }
+    }
+
+    // Remove all highlights
+    function removeAllHighlights() {
+      const sections = ['bigPictureSection', 'keyConceptsSection', 'documentarySection', 'impactSection'];
+      sections.forEach(sectionId => {
+        const section = document.getElementById(sectionId);
+        if (section) {
+          section.style.boxShadow = '';
+          section.style.transform = '';
+          section.style.border = '';
+        }
+      });
     }
   </script>
 </body>
