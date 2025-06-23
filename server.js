@@ -671,7 +671,41 @@ app.get('/api/classroom/:id', async (req, res) => {
 // ============================================================================
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'arxiv-research-pilot.html'));
+  try {
+    const filePath = path.join(__dirname, 'index.html');
+    if (fs.existsSync(filePath)) {
+      res.sendFile(filePath);
+    } else {
+      // Fallback to a simple response if file doesn't exist
+      res.send(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>ArXiv Research Pilot</title>
+          <meta charset="utf-8">
+        </head>
+        <body>
+          <h1>🚀 ArXiv Research Pilot</h1>
+          <p>Server is running successfully!</p>
+          <p>If you're seeing this, the server is working but the main HTML file might not be accessible.</p>
+          <p>Check the logs for more details.</p>
+        </body>
+        </html>
+      `);
+    }
+  } catch (error) {
+    console.error('Error serving root route:', error);
+    res.status(500).send('Server error - check logs');
+  }
+});
+
+// Health check endpoint for Render
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
 });
 
 app.get('/index.html', (req, res) => {
@@ -721,7 +755,7 @@ app.use((req, res) => {
 // SERVER STARTUP
 // ============================================================================
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server is running on http://localhost:${PORT}`);
   console.log(`📖 Open this URL in your browser to use the app.`);
   console.log(`⚙️  Environment: ${process.env.NODE_ENV || 'development'}`);
