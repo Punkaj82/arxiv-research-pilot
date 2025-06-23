@@ -732,9 +732,9 @@ app.use('/icons', express.static(path.join(__dirname, 'icons')));
 // Serve screenshots directory
 app.use('/screenshots', express.static(path.join(__dirname, 'screenshots')));
 
-// Serve index.html for all non-API, non-static routes (SPA support)
+// Serve arxiv-research-pilot.html for all non-API, non-static routes (SPA support)
 app.get(/^\/(?!api|audio|icons|screenshots|manifest\.json|sw\.js|favicon\.ico).*/, (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(__dirname, 'arxiv-research-pilot.html'));
 });
 
 // ============================================================================
