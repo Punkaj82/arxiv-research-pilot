@@ -77,20 +77,20 @@
       border: 2px solid #667eea;
       color: #667eea;
       border-radius: 10px;
-      padding: 1rem 0.8rem;
-      font-size: 0.95rem;
+      padding: 0.8rem 0.6rem;
+      font-size: 0.85rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.4rem;
       text-align: center;
-      min-height: 80px;
+      min-height: 75px;
       justify-content: center;
       word-wrap: break-word;
-      line-height: 1.3;
+      line-height: 1.2;
     }
     .mode-btn.active, .mode-btn:hover {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -343,11 +343,11 @@
       <div class="subtitle">Your all-in-one research paper explorer, presenter, and AI assistant</div>
     </div>
     <div class="mode-selector" id="modeSelector">
-      <button class="mode-btn active" data-mode="abstract"><i class="fas fa-book-open"></i> Research Paper Read</button>
+      <button class="mode-btn active" data-mode="abstract"><i class="fas fa-book-open"></i> Read Paper</button>
       <button class="mode-btn" data-mode="demystify"><i class="fas fa-lightbulb"></i> Demystify</button>
-      <button class="mode-btn" data-mode="classroom"><i class="fas fa-chalkboard-teacher"></i> Classroom Mode</button>
-      <button class="mode-btn" data-mode="download"><i class="fas fa-download"></i> Download/Extract</button>
-      <button class="mode-btn" data-mode="deepresearch"><i class="fas fa-brain"></i> Deep Research Pilot</button>
+      <button class="mode-btn" data-mode="classroom"><i class="fas fa-chalkboard-teacher"></i> Classroom</button>
+      <button class="mode-btn" data-mode="download"><i class="fas fa-download"></i> Download</button>
+      <button class="mode-btn" data-mode="deepresearch"><i class="fas fa-brain"></i> Deep Research</button>
     </div>
     <div class="search-section">
       <div class="search-controls">
@@ -1796,11 +1796,11 @@ console.log('This would create a working application based on the research paper
 
     function getModeDisplayName(mode) {
       const names = {
-        'abstract': 'Research Paper Read Mode',
-        'demystify': 'Demystification Mode',
+        'abstract': 'Read Paper Mode',
+        'demystify': 'Demystify Mode',
         'classroom': 'Classroom Mode',
-        'download': 'Download/Extract Mode',
-        'deepresearch': 'Deep Research -Pilot Mode'
+        'download': 'Download Mode',
+        'deepresearch': 'Deep Research Mode'
       };
       return names[mode] || mode;
     }
@@ -1809,7 +1809,7 @@ console.log('This would create a working application based on the research paper
     async function showDemystifyMode() {
       elements.modeContent.innerHTML = `
         <div class="section-title">
-          <i class="fas fa-lightbulb"></i> Demystification Mode - Analyzing Research Concepts
+          <i class="fas fa-lightbulb"></i> Demystify Research Article - First Principles Analysis
         </div>
         <div class="section-box">
           <div style="text-align: center; padding: 2rem;">
