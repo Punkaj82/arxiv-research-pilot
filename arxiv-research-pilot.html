@@ -67,8 +67,8 @@
     }
     .mode-selector {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1rem;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.5rem;
       margin-bottom: 2rem;
       max-width: 100%;
     }
@@ -76,21 +76,21 @@
       background: #fff;
       border: 2px solid #667eea;
       color: #667eea;
-      border-radius: 10px;
-      padding: 0.8rem 0.6rem;
-      font-size: 0.85rem;
+      border-radius: 8px;
+      padding: 0.6rem 0.4rem;
+      font-size: 0.75rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.4rem;
+      gap: 0.3rem;
       text-align: center;
-      min-height: 75px;
+      min-height: 70px;
       justify-content: center;
       word-wrap: break-word;
-      line-height: 1.2;
+      line-height: 1.1;
     }
     .mode-btn.active, .mode-btn:hover {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -343,11 +343,11 @@
       <div class="subtitle">Your all-in-one research paper explorer, presenter, and AI assistant</div>
     </div>
     <div class="mode-selector" id="modeSelector">
-      <button class="mode-btn active" data-mode="abstract"><i class="fas fa-book-open"></i> Read Paper</button>
-      <button class="mode-btn" data-mode="demystify"><i class="fas fa-lightbulb"></i> Demystify</button>
+      <button class="mode-btn active" data-mode="abstract"><i class="fas fa-book-open"></i> Read Abstract</button>
+      <button class="mode-btn" data-mode="demystify"><i class="fas fa-lightbulb"></i> Demystification</button>
       <button class="mode-btn" data-mode="classroom"><i class="fas fa-chalkboard-teacher"></i> Classroom</button>
-      <button class="mode-btn" data-mode="download"><i class="fas fa-download"></i> Download</button>
       <button class="mode-btn" data-mode="deepresearch"><i class="fas fa-brain"></i> Deep Research</button>
+      <button class="mode-btn" data-mode="download"><i class="fas fa-download"></i> Download</button>
     </div>
     <div class="search-section">
       <div class="search-controls">
@@ -1796,11 +1796,11 @@ console.log('This would create a working application based on the research paper
 
     function getModeDisplayName(mode) {
       const names = {
-        'abstract': 'Read Paper Mode',
-        'demystify': 'Demystify Mode',
+        'abstract': 'Read Abstract Mode',
+        'demystify': 'Demystification Mode',
         'classroom': 'Classroom Mode',
-        'download': 'Download Mode',
-        'deepresearch': 'Deep Research Mode'
+        'deepresearch': 'Deep Research Mode',
+        'download': 'Download Mode'
       };
       return names[mode] || mode;
     }
