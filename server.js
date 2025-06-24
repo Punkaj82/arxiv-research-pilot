@@ -465,7 +465,7 @@ function extractMathematicalModelsLocal(paperContent) {
   
   // Extract mathematical expressions
   const mathPatterns = [
-    /\\[([^\\]+)\\]/g,  // LaTeX expressions
+    /\\\[([^\\]+)\\\]/g,  // LaTeX expressions
     /\\\(([^\\]+)\\\)/g, // Inline math
     /\\begin\{equation\}(.*?)\\end\{equation\}/gs, // Equation blocks
     /\\begin\{align\}(.*?)\\end\{align\}/gs, // Align blocks
