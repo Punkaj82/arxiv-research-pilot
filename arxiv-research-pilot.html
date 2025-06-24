@@ -2929,6 +2929,29 @@ console.log('This would create a working application based on the research paper
           <!-- Related Research -->
           <div class="research-section">
             <h4><i class="fas fa-search"></i> Related Research (${results.relatedResearch.totalFound} found)</h4>
+            <div class="search-sources">
+              <h5>Search Sources:</h5>
+              <div class="source-links">
+                <a href="${results.relatedResearch.searchSources.arxiv}" target="_blank" class="source-link">
+                  <i class="fas fa-external-link-alt"></i> arXiv
+                </a>
+                <a href="${results.relatedResearch.searchSources.googleScholar}" target="_blank" class="source-link">
+                  <i class="fas fa-external-link-alt"></i> Google Scholar
+                </a>
+                <a href="${results.relatedResearch.searchSources.researchGate}" target="_blank" class="source-link">
+                  <i class="fas fa-external-link-alt"></i> ResearchGate
+                </a>
+                <a href="${results.relatedResearch.searchSources.semanticScholar}" target="_blank" class="source-link">
+                  <i class="fas fa-external-link-alt"></i> Semantic Scholar
+                </a>
+                <a href="${results.relatedResearch.searchSources.ieee}" target="_blank" class="source-link">
+                  <i class="fas fa-external-link-alt"></i> IEEE
+                </a>
+                <a href="${results.relatedResearch.searchSources.acm}" target="_blank" class="source-link">
+                  <i class="fas fa-external-link-alt"></i> ACM
+                </a>
+              </div>
+            </div>
             ${results.relatedResearch.papers.map(paper => `
               <div class="research-item">
                 <h5>${paper.title}</h5>
@@ -2938,6 +2961,22 @@ console.log('This would create a working application based on the research paper
                   <span><i class="fas fa-calendar"></i> ${paper.year}</span>
                   <span><i class="fas fa-star"></i> ${paper.citations} citations</span>
                   <span><i class="fas fa-signal"></i> ${paper.relevance} relevance</span>
+                  <span><i class="fas fa-book"></i> ${paper.venue}</span>
+                </div>
+                <div class="paper-links">
+                  <a href="${paper.links.arxiv}" target="_blank" class="paper-link">
+                    <i class="fas fa-file-alt"></i> arXiv
+                  </a>
+                  <a href="${paper.links.pdf}" target="_blank" class="paper-link">
+                    <i class="fas fa-file-pdf"></i> PDF
+                  </a>
+                  <a href="${paper.links.googleScholar}" target="_blank" class="paper-link">
+                    <i class="fas fa-graduation-cap"></i> Google Scholar
+                  </a>
+                  <a href="${paper.links.researchGate}" target="_blank" class="paper-link">
+                    <i class="fas fa-users"></i> ResearchGate
+                  </a>
+                  <span class="doi-link">DOI: ${paper.doi}</span>
                 </div>
               </div>
             `).join('')}
@@ -2957,6 +2996,32 @@ console.log('This would create a working application based on the research paper
                   <span><i class="fas fa-tag"></i> ${app.complexity} complexity</span>
                   <span><i class="fas fa-layer-group"></i> ${app.domain}</span>
                 </div>
+                <div class="math-resources">
+                  <h6>Learning Resources:</h6>
+                  <div class="resource-links">
+                    <a href="${app.links.wolframAlpha}" target="_blank" class="resource-link">
+                      <i class="fas fa-calculator"></i> Wolfram Alpha
+                    </a>
+                    <a href="${app.links.mathWorld}" target="_blank" class="resource-link">
+                      <i class="fas fa-book"></i> MathWorld
+                    </a>
+                    <a href="${app.links.khanAcademy}" target="_blank" class="resource-link">
+                      <i class="fas fa-chalkboard-teacher"></i> Khan Academy
+                    </a>
+                    <a href="${app.links.coursera}" target="_blank" class="resource-link">
+                      <i class="fas fa-graduation-cap"></i> Coursera
+                    </a>
+                    <a href="${app.links.github}" target="_blank" class="resource-link">
+                      <i class="fab fa-github"></i> GitHub
+                    </a>
+                  </div>
+                  <div class="textbook-resources">
+                    <h6>Textbooks & References:</h6>
+                    <ul>
+                      ${app.resources.map(resource => `<li>${resource}</li>`).join('')}
+                    </ul>
+                  </div>
+                </div>
                 <div style="margin-top: 0.5rem;">
                   <strong>Applications:</strong>
                   <ul style="margin: 0.5rem 0 0 1.5rem;">
@@ -2965,6 +3030,31 @@ console.log('This would create a working application based on the research paper
                 </div>
               </div>
             `).join('')}
+            
+            <!-- Learning Resources Section -->
+            <div class="research-item">
+              <h5>Additional Learning Resources</h5>
+              <div class="learning-resources">
+                <div class="resource-category">
+                  <h6><i class="fas fa-book"></i> Textbooks</h6>
+                  <ul>
+                    ${results.applications.learningResources.textbooks.map(book => `<li>${book}</li>`).join('')}
+                  </ul>
+                </div>
+                <div class="resource-category">
+                  <h6><i class="fas fa-laptop"></i> Online Courses</h6>
+                  <ul>
+                    ${results.applications.learningResources.onlineCourses.map(course => `<li>${course}</li>`).join('')}
+                  </ul>
+                </div>
+                <div class="resource-category">
+                  <h6><i class="fas fa-tools"></i> Interactive Tools</h6>
+                  <ul>
+                    ${results.applications.learningResources.interactiveTools.map(tool => `<li>${tool}</li>`).join('')}
+                  </ul>
+                </div>
+              </div>
+            </div>
           </div>
           
           <!-- Research Projects -->
@@ -2980,10 +3070,39 @@ console.log('This would create a working application based on the research paper
                   <span><i class="fas fa-dollar-sign"></i> ${project.funding}</span>
                   <span><i class="fas fa-signal"></i> ${project.impact} impact</span>
                 </div>
+                <div class="project-links">
+                  <a href="${project.links.github}" target="_blank" class="project-link">
+                    <i class="fab fa-github"></i> GitHub
+                  </a>
+                  <a href="${project.links.researchGate}" target="_blank" class="project-link">
+                    <i class="fas fa-users"></i> ResearchGate
+                  </a>
+                  <a href="${project.links.googleScholar}" target="_blank" class="project-link">
+                    <i class="fas fa-graduation-cap"></i> Google Scholar
+                  </a>
+                  <a href="${project.links.arxiv}" target="_blank" class="project-link">
+                    <i class="fas fa-file-alt"></i> arXiv
+                  </a>
+                  ${project.links.website ? `<a href="${project.links.website}" target="_blank" class="project-link">
+                    <i class="fas fa-globe"></i> Website
+                  </a>` : ''}
+                  ${project.links.demo ? `<a href="${project.links.demo}" target="_blank" class="project-link">
+                    <i class="fas fa-play"></i> Demo
+                  </a>` : ''}
+                  ${project.links.documentation ? `<a href="${project.links.documentation}" target="_blank" class="project-link">
+                    <i class="fas fa-book"></i> Documentation
+                  </a>` : ''}
+                </div>
                 <div style="margin-top: 0.5rem;">
                   <strong>Outcomes:</strong>
                   <ul style="margin: 0.5rem 0 0 1.5rem;">
                     ${project.outcomes.map(outcome => `<li>${outcome}</li>`).join('')}
+                  </ul>
+                </div>
+                <div style="margin-top: 0.5rem;">
+                  <strong>Publications:</strong>
+                  <ul style="margin: 0.5rem 0 0 1.5rem;">
+                    ${project.publications.map(pub => `<li>${pub}</li>`).join('')}
                   </ul>
                 </div>
                 <div style="margin-top: 0.5rem;">
@@ -2994,6 +3113,25 @@ console.log('This would create a working application based on the research paper
                 </div>
               </div>
             `).join('')}
+            
+            <!-- Funding Sources -->
+            <div class="research-item">
+              <h5>Funding Sources</h5>
+              <div class="funding-links">
+                <a href="${results.projects.fundingSources.nsf}" target="_blank" class="funding-link">
+                  <i class="fas fa-university"></i> National Science Foundation (NSF)
+                </a>
+                <a href="${results.projects.fundingSources.darpa}" target="_blank" class="funding-link">
+                  <i class="fas fa-shield-alt"></i> DARPA
+                </a>
+                <a href="${results.projects.fundingSources.nih}" target="_blank" class="funding-link">
+                  <i class="fas fa-heartbeat"></i> National Institutes of Health (NIH)
+                </a>
+                <a href="${results.projects.fundingSources.europeanCommission}" target="_blank" class="funding-link">
+                  <i class="fas fa-flag"></i> European Commission
+                </a>
+              </div>
+            </div>
           </div>
           
           <!-- Mathematical Models -->
@@ -3529,6 +3667,238 @@ console.log('This would create a working application based on the research paper
       .library-info ul {
         margin: 0.5rem 0;
         padding-left: 1.5rem;
+      }
+      
+      /* Research Source Links */
+      .search-sources {
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 6px;
+        border: 1px solid #dee2e6;
+      }
+      
+      .search-sources h5 {
+        color: #495057;
+        margin-bottom: 0.75rem;
+        font-size: 0.9rem;
+      }
+      
+      .source-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+      
+      .source-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.5rem 0.75rem;
+        background: #667eea;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        transition: all 0.2s;
+      }
+      
+      .source-link:hover {
+        background: #5a6fd8;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(102,126,234,0.3);
+      }
+      
+      /* Paper Links */
+      .paper-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid #dee2e6;
+      }
+      
+      .paper-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.4rem 0.6rem;
+        background: #28a745;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        transition: all 0.2s;
+      }
+      
+      .paper-link:hover {
+        background: #218838;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(40,167,69,0.3);
+      }
+      
+      .doi-link {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.4rem 0.6rem;
+        background: #6c757d;
+        color: white;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+      
+      /* Math Resource Links */
+      .math-resources {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 6px;
+        border: 1px solid #dee2e6;
+      }
+      
+      .math-resources h6 {
+        color: #495057;
+        margin-bottom: 0.5rem;
+        font-size: 0.85rem;
+      }
+      
+      .resource-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+      
+      .resource-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.4rem 0.6rem;
+        background: #17a2b8;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        transition: all 0.2s;
+      }
+      
+      .resource-link:hover {
+        background: #138496;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(23,162,184,0.3);
+      }
+      
+      .textbook-resources ul {
+        margin: 0.5rem 0;
+        padding-left: 1.5rem;
+        font-size: 0.8rem;
+      }
+      
+      /* Learning Resources */
+      .learning-resources {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+      
+      .resource-category h6 {
+        color: #495057;
+        margin-bottom: 0.5rem;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+      }
+      
+      .resource-category ul {
+        margin: 0;
+        padding-left: 1.5rem;
+        font-size: 0.8rem;
+      }
+      
+      /* Project Links */
+      .project-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid #dee2e6;
+      }
+      
+      .project-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.4rem 0.6rem;
+        background: #fd7e14;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        transition: all 0.2s;
+      }
+      
+      .project-link:hover {
+        background: #e8690b;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(253,126,20,0.3);
+      }
+      
+      /* Funding Links */
+      .funding-links {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      
+      .funding-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
+        background: #6f42c1;
+        color: white;
+        text-decoration: none;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: all 0.2s;
+      }
+      
+      .funding-link:hover {
+        background: #5a32a3;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(111,66,193,0.3);
+      }
+      
+      /* Responsive adjustments */
+      @media (max-width: 768px) {
+        .source-links,
+        .paper-links,
+        .resource-links,
+        .project-links {
+          flex-direction: column;
+        }
+        
+        .learning-resources {
+          grid-template-columns: 1fr;
+        }
+        
+        .source-link,
+        .paper-link,
+        .resource-link,
+        .project-link,
+        .funding-link {
+          justify-content: center;
+        }
       }
     `;
     document.head.appendChild(style);
