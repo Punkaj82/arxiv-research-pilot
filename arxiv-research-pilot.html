@@ -1316,424 +1316,359 @@
       `;
     }
 
-    // Deep Research Mode - Enhanced with AI Research Assistant
+    // Deep Research Mode - Enhanced with AI Research Agent
     function showDeepResearchMode() {
       const hasFullText = selectedPaper.fullText && selectedPaper.fullText.length > 500;
       
       elements.modeContent.innerHTML = `
         <div class="section-title">
-          <i class="fas fa-brain"></i> AI Research Assistant ${hasFullText ? '(Full Paper)' : '(Abstract)'}
+          <i class="fas fa-brain"></i> AI Research Agent ${hasFullText ? '(Full Paper)' : '(Abstract)'}
         </div>
         
-        <div class="research-studio">
-          <!-- Left Panel: AI Research Tools -->
-          <div class="studio-left-panel">
-            <div class="panel-header">
-              <h3><i class="fas fa-robot"></i> AI Research Tools</h3>
-              <p class="paper-title">${selectedPaper.title}</p>
+        <div class="ai-research-container">
+          <!-- AI Research Agent Control Panel -->
+          <div class="ai-control-panel">
+            <div class="control-header">
+              <h3><i class="fas fa-robot"></i> AI Research Agent</h3>
+              <p>Intelligent research analysis and discovery</p>
             </div>
             
-            <!-- Mathematical Models Section -->
-            <div class="ai-tool-section">
-              <h4><i class="fas fa-square-root-alt"></i> Mathematical Models</h4>
-              <div class="tool-description">
-                Extract mathematical models, equations, and algorithms from the research paper
-              </div>
-              <button class="ai-tool-btn" onclick="extractMathematicalModels()">
-                <i class="fas fa-calculator"></i>
-                Extract Models & Equations
+            <div class="research-actions">
+              <button class="ai-action-btn primary" onclick="runAIResearchAgent()">
+                <i class="fas fa-rocket"></i>
+                <span>Launch AI Research Agent</span>
+                <small>Comprehensive analysis & discovery</small>
               </button>
-              <div id="modelsResult" class="tool-result"></div>
+              
+              <div class="quick-actions">
+                <button class="ai-action-btn secondary" onclick="findRelatedResearch()">
+                  <i class="fas fa-search"></i>
+                  <span>Find Related Research</span>
+                </button>
+                <button class="ai-action-btn secondary" onclick="extractMathematicalModels()">
+                  <i class="fas fa-square-root-alt"></i>
+                  <span>Extract Math Models</span>
+                </button>
+                <button class="ai-action-btn secondary" onclick="findMathematicalApplications()">
+                  <i class="fas fa-calculator"></i>
+                  <span>Math Applications</span>
+                </button>
+                <button class="ai-action-btn secondary" onclick="findResearchProjects()">
+                  <i class="fas fa-flask"></i>
+                  <span>Research Projects</span>
+                </button>
+              </div>
             </div>
             
-            <!-- Code Library Generation -->
-            <div class="ai-tool-section">
-              <h4><i class="fas fa-code"></i> Code Library Generation</h4>
-              <div class="tool-description">
-                Generate production-ready code libraries based on research concepts
-              </div>
-              <div class="language-selector">
-                <label>Language:</label>
-                <select id="libraryLanguage">
-                  <option value="python">Python</option>
-                  <option value="javascript">JavaScript</option>
-                  <option value="java">Java</option>
-                  <option value="cpp">C++</option>
-                  <option value="r">R</option>
-                </select>
-              </div>
-              <button class="ai-tool-btn" onclick="generateCodeLibrary()">
-                <i class="fas fa-file-code"></i>
-                Generate Library
-              </button>
-              <div id="libraryResult" class="tool-result"></div>
-            </div>
-            
-            <!-- Research Tools Creation -->
-            <div class="ai-tool-section">
-              <h4><i class="fas fa-tools"></i> Research Tools</h4>
-              <div class="tool-description">
-                Create practical tools and applications from research concepts
-              </div>
-              <button class="ai-tool-btn" onclick="createResearchTools()">
-                <i class="fas fa-wrench"></i>
-                Create Tools & Apps
-              </button>
-              <div id="toolsResult" class="tool-result"></div>
-            </div>
-            
-            <!-- Asset Downloads -->
-            <div class="ai-tool-section">
-              <h4><i class="fas fa-download"></i> Generated Assets</h4>
-              <div class="asset-list" id="generatedAssets">
-                <div class="asset-item">
-                  <i class="fas fa-info-circle"></i>
-                  <span>No assets generated yet</span>
-                  <small>Use AI tools above to create assets</small>
-                </div>
+            <div class="research-status" id="researchStatus">
+              <div class="status-item">
+                <i class="fas fa-info-circle"></i>
+                <span>Ready to analyze: ${selectedPaper.title}</span>
               </div>
             </div>
           </div>
           
-          <!-- Right Panel: Interactive Chat Session -->
-          <div class="studio-right-panel">
-            <div class="chat-header">
-              <h3><i class="fas fa-comments"></i> AI Research Assistant</h3>
-              <p>Interactive chat to understand, test, and create valuable assets</p>
-            </div>
-            
-            <div class="chat-messages" id="chatMessages">
-              <div class="message ai-message">
-                <div class="message-avatar">🤖</div>
-                <div class="message-content">
-                  <strong>AI Research Assistant:</strong> Welcome! I'm here to help you extract maximum value from "${selectedPaper.title}" and create practical assets.
-                  <br><br>
-                  <strong>What I can create for you:</strong>
-                  <ul>
-                    <li>📐 <strong>Mathematical Models:</strong> Extract equations, algorithms, and formulas</li>
-                    <li>💻 <strong>Code Libraries:</strong> Generate production-ready implementations</li>
-                    <li>🛠️ <strong>Research Tools:</strong> Create web apps, APIs, and desktop tools</li>
-                    <li>🔬 <strong>Experiments:</strong> Design tests and validation methods</li>
-                    <li>📊 <strong>Visualizations:</strong> Create data analysis tools</li>
-                  </ul>
-                  <br>
-                  <strong>Quick Actions:</strong> Use the tools on the left or ask me anything about the research!
+          <!-- AI Research Results -->
+          <div class="ai-research-results" id="aiResearchResults">
+            <div class="results-placeholder">
+              <i class="fas fa-robot"></i>
+              <h3>AI Research Agent Ready</h3>
+              <p>Click "Launch AI Research Agent" to start comprehensive analysis</p>
+              <div class="capabilities">
+                <div class="capability">
+                  <i class="fas fa-search"></i>
+                  <span>Find Related Research</span>
                 </div>
-              </div>
-            </div>
-            
-            <div class="chat-input-area">
-              <div class="input-group">
-                <input type="text" id="chatInput" placeholder="Ask me to analyze, create, or explain something..." 
-                       onkeypress="if(event.key==='Enter') sendChatMessage()">
-                <button onclick="sendChatMessage()" class="send-btn">
-                  <i class="fas fa-paper-plane"></i>
-                </button>
-              </div>
-              
-              <div class="quick-actions">
-                <button class="quick-btn" onclick="quickAction('analyze')">
-                  <i class="fas fa-search"></i> Analyze Paper
-                </button>
-                <button class="quick-btn" onclick="quickAction('models')">
-                  <i class="fas fa-square-root-alt"></i> Extract Models
-                </button>
-                <button class="quick-btn" onclick="quickAction('library')">
-                  <i class="fas fa-code"></i> Generate Library
-                </button>
-                <button class="quick-btn" onclick="quickAction('tools')">
-                  <i class="fas fa-tools"></i> Create Tools
-                </button>
+                <div class="capability">
+                  <i class="fas fa-square-root-alt"></i>
+                  <span>Extract Mathematical Models</span>
+                </div>
+                <div class="capability">
+                  <i class="fas fa-calculator"></i>
+                  <span>Discover Applications</span>
+                </div>
+                <div class="capability">
+                  <i class="fas fa-flask"></i>
+                  <span>Find Research Projects</span>
+                </div>
+                <div class="capability">
+                  <i class="fas fa-file-alt"></i>
+                  <span>Generate Summary</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
         
         <style>
-          .research-studio {
+          .ai-research-container {
             display: flex;
             gap: 2rem;
-            height: 70vh;
             margin-top: 1rem;
+            min-height: 600px;
           }
           
-          .studio-left-panel {
-            flex: 1;
+          .ai-control-panel {
+            flex: 0 0 350px;
             background: #f8f9fa;
             border-radius: 12px;
             padding: 1.5rem;
-            overflow-y: auto;
             border: 2px solid #e9ecef;
+            height: fit-content;
           }
           
-          .studio-right-panel {
-            flex: 1;
-            background: #ffffff;
-            border-radius: 12px;
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            border: 2px solid #667eea;
-          }
-          
-          .panel-header {
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid #dee2e6;
-          }
-          
-          .panel-header h3 {
+          .control-header h3 {
             color: #667eea;
             margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
           }
           
-          .paper-title {
+          .control-header p {
+            color: #6c757d;
             font-size: 0.9rem;
-            color: #6c757d;
-            font-style: italic;
-          }
-          
-          .ai-tool-section {
-            margin-bottom: 2rem;
-            padding: 1rem;
-            background: #ffffff;
-            border-radius: 8px;
-            border: 1px solid #dee2e6;
-          }
-          
-          .ai-tool-section h4 {
-            color: #495057;
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-          }
-          
-          .tool-description {
-            font-size: 0.85rem;
-            color: #6c757d;
-            margin-bottom: 1rem;
-            line-height: 1.4;
-          }
-          
-          .ai-tool-btn {
-            width: 100%;
-            padding: 0.75rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-          }
-          
-          .ai-tool-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102,126,234,0.3);
-          }
-          
-          .ai-tool-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-          }
-          
-          .language-selector {
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-          }
-          
-          .language-selector label {
-            font-weight: 600;
-            color: #495057;
-          }
-          
-          .language-selector select {
-            padding: 0.5rem;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-            background: white;
-          }
-          
-          .tool-result {
-            margin-top: 1rem;
-            padding: 1rem;
-            background: #f8f9fa;
-            border-radius: 6px;
-            border-left: 4px solid #667eea;
-            display: none;
-          }
-          
-          .tool-result.show {
-            display: block;
-          }
-          
-          .asset-list {
-            margin-top: 1rem;
-          }
-          
-          .asset-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem;
-            background: #ffffff;
-            border-radius: 6px;
-            border: 1px solid #dee2e6;
-            margin-bottom: 0.5rem;
-            cursor: pointer;
-            transition: all 0.2s;
-          }
-          
-          .asset-item:hover {
-            background: #f8f9fa;
-            border-color: #667eea;
-          }
-          
-          .asset-item i {
-            color: #667eea;
-            font-size: 1.2rem;
-          }
-          
-          .asset-item span {
-            font-weight: 600;
-            color: #495057;
-          }
-          
-          .asset-item small {
-            color: #6c757d;
-            font-size: 0.8rem;
-          }
-          
-          .chat-header {
             margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid #dee2e6;
           }
           
-          .chat-header h3 {
-            color: #667eea;
-            margin-bottom: 0.5rem;
-          }
-          
-          .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1rem;
-            background: #f8f9fa;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-          }
-          
-          .message {
-            margin-bottom: 1rem;
-            display: flex;
-            gap: 0.75rem;
-          }
-          
-          .message-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #667eea;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            flex-shrink: 0;
-          }
-          
-          .message-content {
-            background: white;
-            padding: 1rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            flex: 1;
-          }
-          
-          .ai-message .message-avatar {
-            background: #28a745;
-          }
-          
-          .user-message .message-avatar {
-            background: #667eea;
-          }
-          
-          .chat-input-area {
+          .research-actions {
             display: flex;
             flex-direction: column;
             gap: 1rem;
           }
           
-          .input-group {
+          .ai-action-btn {
             display: flex;
+            flex-direction: column;
+            align-items: center;
             gap: 0.5rem;
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            font-weight: 600;
           }
           
-          .input-group input {
-            flex: 1;
-            padding: 0.75rem;
+          .ai-action-btn.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+          }
+          
+          .ai-action-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102,126,234,0.3);
+          }
+          
+          .ai-action-btn.secondary {
+            background: white;
+            color: #495057;
             border: 2px solid #dee2e6;
-            border-radius: 6px;
+          }
+          
+          .ai-action-btn.secondary:hover {
+            border-color: #667eea;
+            color: #667eea;
+            transform: translateY(-1px);
+          }
+          
+          .ai-action-btn i {
+            font-size: 1.5rem;
+          }
+          
+          .ai-action-btn span {
             font-size: 0.9rem;
           }
           
-          .send-btn {
-            padding: 0.75rem 1rem;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
-          }
-          
-          .send-btn:hover {
-            background: #5a6fd8;
+          .ai-action-btn small {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            font-weight: normal;
           }
           
           .quick-actions {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: 1fr 1fr;
             gap: 0.5rem;
           }
           
-          .quick-btn {
-            padding: 0.5rem;
-            background: #f8f9fa;
+          .research-status {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 6px;
             border: 1px solid #dee2e6;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.3rem;
           }
           
-          .quick-btn:hover {
-            background: #e9ecef;
+          .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #495057;
+            font-size: 0.9rem;
+          }
+          
+          .ai-research-results {
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 2px solid #667eea;
+            min-height: 600px;
+          }
+          
+          .results-placeholder {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #6c757d;
+          }
+          
+          .results-placeholder i {
+            font-size: 4rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+          }
+          
+          .results-placeholder h3 {
+            color: #495057;
+            margin-bottom: 0.5rem;
+          }
+          
+          .capabilities {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+          }
+          
+          .capability {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+          }
+          
+          .capability i {
+            color: #667eea;
+            font-size: 1.2rem;
+          }
+          
+          .capability span {
+            font-size: 0.85rem;
+            font-weight: 600;
+          }
+          
+          /* Research Results Styles */
+          .research-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+          }
+          
+          .research-section h4 {
+            color: #495057;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+          }
+          
+          .research-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            border: 1px solid #dee2e6;
+            transition: all 0.2s;
+          }
+          
+          .research-item:hover {
             border-color: #667eea;
+            box-shadow: 0 2px 8px rgba(102,126,234,0.1);
+          }
+          
+          .research-item h5 {
+            color: #667eea;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+          }
+          
+          .research-item p {
+            color: #6c757d;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin-bottom: 0.5rem;
+          }
+          
+          .research-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-top: 0.5rem;
+          }
+          
+          .research-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+          }
+          
+          .math-equation {
+            background: #f8f9fa;
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            margin: 0.5rem 0;
+            border: 1px solid #dee2e6;
+          }
+          
+          .complexity-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+          }
+          
+          .complexity-basic { background: #d4edda; color: #155724; }
+          .complexity-intermediate { background: #fff3cd; color: #856404; }
+          .complexity-advanced { background: #f8d7da; color: #721c24; }
+          
+          .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+          }
+          
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
           }
           
           @media (max-width: 1024px) {
-            .research-studio {
+            .ai-research-container {
               flex-direction: column;
-              height: auto;
             }
             
-            .studio-left-panel,
-            .studio-right-panel {
+            .ai-control-panel {
               flex: none;
+            }
+            
+            .quick-actions {
+              grid-template-columns: 1fr;
             }
           }
         </style>
@@ -2869,31 +2804,481 @@ console.log('This would create a working application based on the research paper
     }
 
     // ============================================================================
-    // AI RESEARCH ASSISTANT FUNCTIONS
+    // AI RESEARCH AGENT FUNCTIONS
     // ============================================================================
 
-    // Extract mathematical models from research paper
-    async function extractMathematicalModels() {
-      const button = event.target.closest('.ai-tool-btn');
-      const resultDiv = document.getElementById('modelsResult');
-      
+    // Main AI Research Agent function
+    async function runAIResearchAgent() {
       if (!selectedPaper) {
         showNotification('Please select a research paper first', 'error');
         return;
       }
       
+      const resultsDiv = document.getElementById('aiResearchResults');
+      const statusDiv = document.getElementById('researchStatus');
+      
       try {
-        // Disable button and show loading
-        button.disabled = true;
-        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Extracting Models...';
-        resultDiv.innerHTML = '<div class="loading">Analyzing research paper for mathematical models...</div>';
-        resultDiv.classList.add('show');
+        // Update status
+        statusDiv.innerHTML = `
+          <div class="status-item">
+            <div class="loading-spinner"></div>
+            <span>AI Research Agent analyzing paper...</span>
+          </div>
+        `;
+        
+        // Show loading in results
+        resultsDiv.innerHTML = `
+          <div class="results-placeholder">
+            <div class="loading-spinner" style="width: 40px; height: 40px; margin: 0 auto 1rem;"></div>
+            <h3>AI Research Agent Working...</h3>
+            <p>Analyzing research paper and discovering insights</p>
+          </div>
+        `;
         
         // Get paper content
         const paperContent = selectedPaper.fullText || selectedPaper.abstract || '';
         
+        // Call AI Research Agent API
+        const response = await fetch('/api/ai-research-agent', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ 
+            paperContent,
+            researchType: 'comprehensive'
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          // Display comprehensive results
+          displayAIResearchResults(result.results);
+          
+          // Update status
+          statusDiv.innerHTML = `
+            <div class="status-item">
+              <i class="fas fa-check-circle" style="color: #28a745;"></i>
+              <span>Analysis complete - ${result.results.keywords.length} keywords found</span>
+            </div>
+          `;
+        } else {
+          throw new Error(result.error || 'AI Research Agent failed');
+        }
+        
+      } catch (error) {
+        console.error('AI Research Agent error:', error);
+        
+        resultsDiv.innerHTML = `
+          <div class="results-placeholder">
+            <i class="fas fa-exclamation-triangle" style="color: #dc3545;"></i>
+            <h3>Analysis Failed</h3>
+            <p>Error: ${error.message}</p>
+            <button class="ai-action-btn secondary" onclick="runAIResearchAgent()" style="margin-top: 1rem;">
+              <i class="fas fa-redo"></i>
+              <span>Try Again</span>
+            </button>
+          </div>
+        `;
+        
+        statusDiv.innerHTML = `
+          <div class="status-item">
+            <i class="fas fa-exclamation-triangle" style="color: #dc3545;"></i>
+            <span>Analysis failed - ${error.message}</span>
+          </div>
+        `;
+      }
+    }
+
+    // Display AI Research Results
+    function displayAIResearchResults(results) {
+      const resultsDiv = document.getElementById('aiResearchResults');
+      
+      resultsDiv.innerHTML = `
+        <div class="research-results">
+          <!-- Research Summary -->
+          <div class="research-section">
+            <h4><i class="fas fa-file-alt"></i> Research Summary</h4>
+            <div class="research-item">
+              <h5>Overview</h5>
+              <p>${results.summary.overview}</p>
+              <div class="research-meta">
+                <span><i class="fas fa-tags"></i> Domain: ${results.domain}</span>
+                <span><i class="fas fa-key"></i> Keywords: ${results.keywords.slice(0, 5).join(', ')}</span>
+              </div>
+            </div>
+            
+            <div class="research-item">
+              <h5>Key Findings</h5>
+              <ul>
+                ${results.summary.keyFindings.map(finding => `<li>${finding}</li>`).join('')}
+              </ul>
+            </div>
+            
+            <div class="research-item">
+              <h5>Impact Assessment</h5>
+              <div class="research-meta">
+                <span><i class="fas fa-graduation-cap"></i> Academic: ${results.summary.impact.academic}</span>
+                <span><i class="fas fa-industry"></i> Practical: ${results.summary.impact.practical}</span>
+                <span><i class="fas fa-briefcase"></i> Commercial: ${results.summary.impact.commercial}</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Related Research -->
+          <div class="research-section">
+            <h4><i class="fas fa-search"></i> Related Research (${results.relatedResearch.totalFound} found)</h4>
+            ${results.relatedResearch.papers.map(paper => `
+              <div class="research-item">
+                <h5>${paper.title}</h5>
+                <p>${paper.abstract}</p>
+                <div class="research-meta">
+                  <span><i class="fas fa-user"></i> ${paper.authors}</span>
+                  <span><i class="fas fa-calendar"></i> ${paper.year}</span>
+                  <span><i class="fas fa-star"></i> ${paper.citations} citations</span>
+                  <span><i class="fas fa-signal"></i> ${paper.relevance} relevance</span>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+          
+          <!-- Mathematical Applications -->
+          <div class="research-section">
+            <h4><i class="fas fa-calculator"></i> Mathematical Applications (${results.applications.totalFound} found)</h4>
+            ${results.applications.applications.map(app => `
+              <div class="research-item">
+                <h5>${app.name}</h5>
+                <p>${app.description}</p>
+                <div class="math-equations">
+                  ${app.equations.map(eq => `<div class="math-equation">${eq}</div>`).join('')}
+                </div>
+                <div class="research-meta">
+                  <span><i class="fas fa-tag"></i> ${app.complexity} complexity</span>
+                  <span><i class="fas fa-layer-group"></i> ${app.domain}</span>
+                </div>
+                <div style="margin-top: 0.5rem;">
+                  <strong>Applications:</strong>
+                  <ul style="margin: 0.5rem 0 0 1.5rem;">
+                    ${app.applications.map(application => `<li>${application}</li>`).join('')}
+                  </ul>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+          
+          <!-- Research Projects -->
+          <div class="research-section">
+            <h4><i class="fas fa-flask"></i> Research Projects (${results.projects.totalFound} found)</h4>
+            ${results.projects.projects.map(project => `
+              <div class="research-item">
+                <h5>${project.name}</h5>
+                <p>${project.description}</p>
+                <div class="research-meta">
+                  <span><i class="fas fa-users"></i> ${project.team}</span>
+                  <span><i class="fas fa-clock"></i> ${project.duration}</span>
+                  <span><i class="fas fa-dollar-sign"></i> ${project.funding}</span>
+                  <span><i class="fas fa-signal"></i> ${project.impact} impact</span>
+                </div>
+                <div style="margin-top: 0.5rem;">
+                  <strong>Outcomes:</strong>
+                  <ul style="margin: 0.5rem 0 0 1.5rem;">
+                    ${project.outcomes.map(outcome => `<li>${outcome}</li>`).join('')}
+                  </ul>
+                </div>
+                <div style="margin-top: 0.5rem;">
+                  <strong>Technologies:</strong>
+                  <code style="background: #f8f9fa; padding: 0.25rem 0.5rem; border-radius: 3px; font-size: 0.8rem;">
+                    ${project.technologies.join(', ')}
+                  </code>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+          
+          <!-- Mathematical Models -->
+          <div class="research-section">
+            <h4><i class="fas fa-square-root-alt"></i> Mathematical Models</h4>
+            <div class="research-item">
+              <h5>Complexity Analysis</h5>
+              <p>Mathematical complexity level: <span class="complexity-badge complexity-${results.mathematicalModels.models.complexity.level.toLowerCase()}">${results.mathematicalModels.models.complexity.level}</span></p>
+              <p>Complexity score: ${results.mathematicalModels.models.complexity.score}/100</p>
+            </div>
+            
+            <div class="research-item">
+              <h5>Mathematical Expressions</h5>
+              ${results.mathematicalModels.models.mathematicalExpressions.slice(0, 5).map(expr => 
+                `<div class="math-equation">${expr}</div>`
+              ).join('')}
+            </div>
+            
+            <div class="research-item">
+              <h5>Algorithms</h5>
+              <ul>
+                ${results.mathematicalModels.models.algorithms.slice(0, 5).map(algo => `<li>${algo}</li>`).join('')}
+              </ul>
+            </div>
+            
+            <div class="research-item">
+              <h5>Applications</h5>
+              <ul>
+                ${results.mathematicalModels.models.applications.map(app => `<li>${app}</li>`).join('')}
+              </ul>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Find Related Research
+    async function findRelatedResearch() {
+      if (!selectedPaper) {
+        showNotification('Please select a research paper first', 'error');
+        return;
+      }
+      
+      const resultsDiv = document.getElementById('aiResearchResults');
+      
+      try {
+        resultsDiv.innerHTML = `
+          <div class="results-placeholder">
+            <div class="loading-spinner" style="width: 40px; height: 40px; margin: 0 auto 1rem;"></div>
+            <h3>Searching Related Research...</h3>
+            <p>Finding papers and studies related to this research</p>
+          </div>
+        `;
+        
+        // Extract keywords and domain
+        const paperContent = selectedPaper.fullText || selectedPaper.abstract || '';
+        const keywords = extractKeywords(paperContent);
+        const domain = extractResearchDomain(paperContent);
+        
         // Call API
-        const response = await fetch('/api/extract-models', {
+        const response = await fetch('/api/find-related-research', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ keywords, domain })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          resultsDiv.innerHTML = `
+            <div class="research-section">
+              <h4><i class="fas fa-search"></i> Related Research (${result.results.totalFound} found)</h4>
+              <p>Search keywords: ${result.results.searchKeywords.join(', ')}</p>
+              ${result.results.papers.map(paper => `
+                <div class="research-item">
+                  <h5>${paper.title}</h5>
+                  <p>${paper.abstract}</p>
+                  <div class="research-meta">
+                    <span><i class="fas fa-user"></i> ${paper.authors}</span>
+                    <span><i class="fas fa-calendar"></i> ${paper.year}</span>
+                    <span><i class="fas fa-star"></i> ${paper.citations} citations</span>
+                    <span><i class="fas fa-signal"></i> ${paper.relevance} relevance</span>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        } else {
+          throw new Error(result.error || 'Failed to find related research');
+        }
+        
+      } catch (error) {
+        console.error('Related research error:', error);
+        resultsDiv.innerHTML = `
+          <div class="results-placeholder">
+            <i class="fas fa-exclamation-triangle" style="color: #dc3545;"></i>
+            <h3>Search Failed</h3>
+            <p>Error: ${error.message}</p>
+          </div>
+        `;
+      }
+    }
+
+    // Find Mathematical Applications
+    async function findMathematicalApplications() {
+      if (!selectedPaper) {
+        showNotification('Please select a research paper first', 'error');
+        return;
+      }
+      
+      const resultsDiv = document.getElementById('aiResearchResults');
+      
+      try {
+        resultsDiv.innerHTML = `
+          <div class="results-placeholder">
+            <div class="loading-spinner" style="width: 40px; height: 40px; margin: 0 auto 1rem;"></div>
+            <h3>Finding Mathematical Applications...</h3>
+            <p>Discovering mathematical models and applications</p>
+          </div>
+        `;
+        
+        // Extract keywords and domain
+        const paperContent = selectedPaper.fullText || selectedPaper.abstract || '';
+        const keywords = extractKeywords(paperContent);
+        const domain = extractResearchDomain(paperContent);
+        
+        // Call API
+        const response = await fetch('/api/find-mathematical-applications', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ keywords, domain })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          resultsDiv.innerHTML = `
+            <div class="research-section">
+              <h4><i class="fas fa-calculator"></i> Mathematical Applications (${result.results.totalFound} found)</h4>
+              <p>Mathematical domain: ${result.results.mathematicalDomain}</p>
+              ${result.results.applications.map(app => `
+                <div class="research-item">
+                  <h5>${app.name}</h5>
+                  <p>${app.description}</p>
+                  <div class="math-equations">
+                    ${app.equations.map(eq => `<div class="math-equation">${eq}</div>`).join('')}
+                  </div>
+                  <div class="research-meta">
+                    <span><i class="fas fa-tag"></i> ${app.complexity} complexity</span>
+                    <span><i class="fas fa-layer-group"></i> ${app.domain}</span>
+                  </div>
+                  <div style="margin-top: 0.5rem;">
+                    <strong>Applications:</strong>
+                    <ul style="margin: 0.5rem 0 0 1.5rem;">
+                      ${app.applications.map(application => `<li>${application}</li>`).join('')}
+                    </ul>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        } else {
+          throw new Error(result.error || 'Failed to find mathematical applications');
+        }
+        
+      } catch (error) {
+        console.error('Mathematical applications error:', error);
+        resultsDiv.innerHTML = `
+          <div class="results-placeholder">
+            <i class="fas fa-exclamation-triangle" style="color: #dc3545;"></i>
+            <h3>Search Failed</h3>
+            <p>Error: ${error.message}</p>
+          </div>
+        `;
+      }
+    }
+
+    // Find Research Projects
+    async function findResearchProjects() {
+      if (!selectedPaper) {
+        showNotification('Please select a research paper first', 'error');
+        return;
+      }
+      
+      const resultsDiv = document.getElementById('aiResearchResults');
+      
+      try {
+        resultsDiv.innerHTML = `
+          <div class="results-placeholder">
+            <div class="loading-spinner" style="width: 40px; height: 40px; margin: 0 auto 1rem;"></div>
+            <h3>Finding Research Projects...</h3>
+            <p>Discovering related research projects and implementations</p>
+          </div>
+        `;
+        
+        // Extract keywords and domain
+        const paperContent = selectedPaper.fullText || selectedPaper.abstract || '';
+        const keywords = extractKeywords(paperContent);
+        const domain = extractResearchDomain(paperContent);
+        
+        // Call API
+        const response = await fetch('/api/find-research-projects', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ keywords, domain })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          resultsDiv.innerHTML = `
+            <div class="research-section">
+              <h4><i class="fas fa-flask"></i> Research Projects (${result.results.totalFound} found)</h4>
+              <p>Research area: ${result.results.researchArea}</p>
+              ${result.results.projects.map(project => `
+                <div class="research-item">
+                  <h5>${project.name}</h5>
+                  <p>${project.description}</p>
+                  <div class="research-meta">
+                    <span><i class="fas fa-users"></i> ${project.team}</span>
+                    <span><i class="fas fa-clock"></i> ${project.duration}</span>
+                    <span><i class="fas fa-dollar-sign"></i> ${project.funding}</span>
+                    <span><i class="fas fa-signal"></i> ${project.impact} impact</span>
+                  </div>
+                  <div style="margin-top: 0.5rem;">
+                    <strong>Outcomes:</strong>
+                    <ul style="margin: 0.5rem 0 0 1.5rem;">
+                      ${project.outcomes.map(outcome => `<li>${outcome}</li>`).join('')}
+                    </ul>
+                  </div>
+                  <div style="margin-top: 0.5rem;">
+                    <strong>Technologies:</strong>
+                    <code style="background: #f8f9fa; padding: 0.25rem 0.5rem; border-radius: 3px; font-size: 0.8rem;">
+                      ${project.technologies.join(', ')}
+                    </code>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        } else {
+          throw new Error(result.error || 'Failed to find research projects');
+        }
+        
+      } catch (error) {
+        console.error('Research projects error:', error);
+        resultsDiv.innerHTML = `
+          <div class="results-placeholder">
+            <i class="fas fa-exclamation-triangle" style="color: #dc3545;"></i>
+            <h3>Search Failed</h3>
+            <p>Error: ${error.message}</p>
+          </div>
+        `;
+      }
+    }
+
+    // Enhanced mathematical model extraction
+    async function extractMathematicalModels() {
+      if (!selectedPaper) {
+        showNotification('Please select a research paper first', 'error');
+        return;
+      }
+      
+      const resultsDiv = document.getElementById('aiResearchResults');
+      
+      try {
+        resultsDiv.innerHTML = `
+          <div class="results-placeholder">
+            <div class="loading-spinner" style="width: 40px; height: 40px; margin: 0 auto 1rem;"></div>
+            <h3>Extracting Mathematical Models...</h3>
+            <p>Analyzing equations, algorithms, and mathematical expressions</p>
+          </div>
+        `;
+        
+        // Get paper content
+        const paperContent = selectedPaper.fullText || selectedPaper.abstract || '';
+        
+        // Call enhanced API
+        const response = await fetch('/api/extract-models-enhanced', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -2904,581 +3289,120 @@ console.log('This would create a working application based on the research paper
         const result = await response.json();
         
         if (result.success) {
-          // Display results
-          let displayContent = '';
-          
-          if (typeof result.models === 'string') {
-            // OpenAI response
-            displayContent = `
-              <div class="success-message">
-                <i class="fas fa-check-circle"></i> Models extracted successfully using ${result.source}
+          const models = result.models;
+          resultsDiv.innerHTML = `
+            <div class="research-section">
+              <h4><i class="fas fa-square-root-alt"></i> Mathematical Models (Enhanced Analysis)</h4>
+              <p>Source: ${result.source}</p>
+              
+              <div class="research-item">
+                <h5>Complexity Analysis</h5>
+                <p>Level: <span class="complexity-badge complexity-${models.complexity.level.toLowerCase()}">${models.complexity.level}</span></p>
+                <p>Score: ${models.complexity.score}/100</p>
+                <div class="research-meta">
+                  <span><i class="fas fa-chart-bar"></i> Basic: ${models.complexity.categories.basic}</span>
+                  <span><i class="fas fa-chart-bar"></i> Intermediate: ${models.complexity.categories.intermediate}</span>
+                  <span><i class="fas fa-chart-bar"></i> Advanced: ${models.complexity.categories.advanced}</span>
+                </div>
               </div>
-              <div class="models-content">
-                <pre>${result.models}</pre>
+              
+              <div class="research-item">
+                <h5>Mathematical Expressions (${models.mathematicalExpressions.length})</h5>
+                ${models.mathematicalExpressions.map(expr => 
+                  `<div class="math-equation">${expr}</div>`
+                ).join('')}
               </div>
-              <button class="download-btn" onclick="downloadAsset('mathematical_models.txt', \`${result.models}\`)">
-                <i class="fas fa-download"></i> Download Models
-              </button>
-            `;
-          } else {
-            // Local analysis response
-            const models = result.models;
-            displayContent = `
-              <div class="success-message">
-                <i class="fas fa-check-circle"></i> Models extracted using ${result.source}
-              </div>
-              <div class="models-content">
-                <h5>Mathematical Expressions:</h5>
+              
+              <div class="research-item">
+                <h5>Algorithms (${models.algorithms.length})</h5>
                 <ul>
-                  ${models.mathematicalExpressions.slice(0, 5).map(expr => `<li><code>${expr}</code></li>`).join('')}
+                  ${models.algorithms.map(algo => `<li>${algo}</li>`).join('')}
                 </ul>
-                
-                <h5>Algorithms:</h5>
+              </div>
+              
+              <div class="research-item">
+                <h5>Theorems (${models.theorems.length})</h5>
                 <ul>
-                  ${models.algorithms.slice(0, 5).map(algo => `<li>${algo}</li>`).join('')}
+                  ${models.theorems.map(theorem => `<li>${theorem}</li>`).join('')}
                 </ul>
-                
-                <h5>Implementation Guidelines:</h5>
+              </div>
+              
+              <div class="research-item">
+                <h5>Definitions (${models.definitions.length})</h5>
+                <ul>
+                  ${models.definitions.map(def => `<li>${def}</li>`).join('')}
+                </ul>
+              </div>
+              
+              <div class="research-item">
+                <h5>Mathematical Applications</h5>
+                <ul>
+                  ${models.applications.map(app => `<li>${app}</li>`).join('')}
+                </ul>
+              </div>
+              
+              <div class="research-item">
+                <h5>Implementation Guidelines</h5>
                 <ul>
                   ${Object.entries(models.implementation).map(([key, value]) => `<li><strong>${key}:</strong> ${value}</li>`).join('')}
                 </ul>
               </div>
-              <button class="download-btn" onclick="downloadAsset('mathematical_models.json', JSON.stringify(models, null, 2))">
-                <i class="fas fa-download"></i> Download Models
-              </button>
-            `;
-          }
-          
-          resultDiv.innerHTML = displayContent;
-          
-          // Add to generated assets
-          addGeneratedAsset('Mathematical Models', 'mathematical_models.txt', 'Models and equations extracted from research paper');
-          
-        } else {
-          resultDiv.innerHTML = `
-            <div class="error-message">
-              <i class="fas fa-exclamation-triangle"></i> Failed to extract models: ${result.error}
             </div>
           `;
+        } else {
+          throw new Error(result.error || 'Failed to extract mathematical models');
         }
         
       } catch (error) {
-        console.error('Model extraction error:', error);
-        resultDiv.innerHTML = `
-          <div class="error-message">
-            <i class="fas fa-exclamation-triangle"></i> Error extracting models: ${error.message}
+        console.error('Mathematical model extraction error:', error);
+        resultsDiv.innerHTML = `
+          <div class="results-placeholder">
+            <i class="fas fa-exclamation-triangle" style="color: #dc3545;"></i>
+            <h3>Extraction Failed</h3>
+            <p>Error: ${error.message}</p>
           </div>
         `;
-      } finally {
-        // Re-enable button
-        button.disabled = false;
-        button.innerHTML = '<i class="fas fa-calculator"></i> Extract Models & Equations';
-      }
-    }
-
-    // Generate code library from research paper
-    async function generateCodeLibrary() {
-      const button = event.target.closest('.ai-tool-btn');
-      const resultDiv = document.getElementById('libraryResult');
-      const language = document.getElementById('libraryLanguage').value;
-      
-      if (!selectedPaper) {
-        showNotification('Please select a research paper first', 'error');
-        return;
-      }
-      
-      try {
-        // Disable button and show loading
-        button.disabled = true;
-        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating Library...';
-        resultDiv.innerHTML = '<div class="loading">Generating code library...</div>';
-        resultDiv.classList.add('show');
-        
-        // Get paper content
-        const paperContent = selectedPaper.fullText || selectedPaper.abstract || '';
-        
-        // Call API
-        const response = await fetch('/api/generate-library', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ paperContent, language })
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-          // Display results
-          let displayContent = '';
-          
-          if (typeof result.library === 'string') {
-            // OpenAI response
-            displayContent = `
-              <div class="success-message">
-                <i class="fas fa-check-circle"></i> Library generated successfully using ${result.source}
-              </div>
-              <div class="library-content">
-                <pre><code class="language-${language}">${result.library}</code></pre>
-              </div>
-              <button class="download-btn" onclick="downloadAsset('research_library.${getFileExtension(language)}', \`${result.library}\`)">
-                <i class="fas fa-download"></i> Download Library
-              </button>
-            `;
-          } else {
-            // Local generation response
-            const library = result.library;
-            displayContent = `
-              <div class="success-message">
-                <i class="fas fa-check-circle"></i> Library generated using ${result.source}
-              </div>
-              <div class="library-content">
-                <pre><code class="language-${language}">${library}</code></pre>
-              </div>
-              <div class="library-info">
-                <h5>Requirements:</h5>
-                <code>${result.requirements.join(', ')}</code>
-                
-                <h5>Documentation:</h5>
-                <ul>
-                  ${Object.entries(result.documentation).map(([key, value]) => `<li><strong>${key}:</strong> ${value}</li>`).join('')}
-                </ul>
-              </div>
-              <button class="download-btn" onclick="downloadAsset('research_library.${getFileExtension(language)}', \`${library}\`)">
-                <i class="fas fa-download"></i> Download Library
-              </button>
-            `;
-          }
-          
-          resultDiv.innerHTML = displayContent;
-          
-          // Add to generated assets
-          addGeneratedAsset('Code Library', `research_library.${getFileExtension(language)}`, `${language.toUpperCase()} library based on research paper`);
-          
-        } else {
-          resultDiv.innerHTML = `
-            <div class="error-message">
-              <i class="fas fa-exclamation-triangle"></i> Failed to generate library: ${result.error}
-            </div>
-          `;
-        }
-        
-      } catch (error) {
-        console.error('Library generation error:', error);
-        resultDiv.innerHTML = `
-          <div class="error-message">
-            <i class="fas fa-exclamation-triangle"></i> Error generating library: ${error.message}
-          </div>
-        `;
-      } finally {
-        // Re-enable button
-        button.disabled = false;
-        button.innerHTML = '<i class="fas fa-file-code"></i> Generate Library';
-      }
-    }
-
-    // Create research tools from research paper
-    async function createResearchTools() {
-      const button = event.target.closest('.ai-tool-btn');
-      const resultDiv = document.getElementById('toolsResult');
-      
-      if (!selectedPaper) {
-        showNotification('Please select a research paper first', 'error');
-        return;
-      }
-      
-      try {
-        // Disable button and show loading
-        button.disabled = true;
-        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Tools...';
-        resultDiv.innerHTML = '<div class="loading">Creating research tools and applications...</div>';
-        resultDiv.classList.add('show');
-        
-        // Get paper content
-        const paperContent = selectedPaper.fullText || selectedPaper.abstract || '';
-        
-        // Call API
-        const response = await fetch('/api/create-tools', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ paperContent })
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-          // Display results
-          let displayContent = '';
-          
-          if (typeof result.tools === 'string') {
-            // OpenAI response
-            displayContent = `
-              <div class="success-message">
-                <i class="fas fa-check-circle"></i> Tools created successfully using ${result.source}
-              </div>
-              <div class="tools-content">
-                <pre>${result.tools}</pre>
-              </div>
-              <button class="download-btn" onclick="downloadAsset('research_tools.md', \`${result.tools}\`)">
-                <i class="fas fa-download"></i> Download Tools Specification
-              </button>
-            `;
-          } else {
-            // Local generation response
-            const tools = result.tools;
-            displayContent = `
-              <div class="success-message">
-                <i class="fas fa-check-circle"></i> Tools created using ${result.source}
-              </div>
-              <div class="tools-content">
-                ${Object.entries(tools).map(([key, tool]) => `
-                  <div class="tool-item">
-                    <h5><i class="fas fa-${getToolIcon(key)}"></i> ${tool.name}</h5>
-                    <p>${tool.description}</p>
-                    <div class="tool-features">
-                      <strong>Features:</strong>
-                      <ul>
-                        ${tool.features.map(feature => `<li>${feature}</li>`).join('')}
-                      </ul>
-                    </div>
-                    <div class="tool-tech">
-                      <strong>Tech Stack:</strong>
-                      <code>${tool.techStack.join(', ')}</code>
-                    </div>
-                  </div>
-                `).join('')}
-              </div>
-              <button class="download-btn" onclick="downloadAsset('research_tools.json', JSON.stringify(tools, null, 2))">
-                <i class="fas fa-download"></i> Download Tools Specification
-              </button>
-            `;
-          }
-          
-          resultDiv.innerHTML = displayContent;
-          
-          // Add to generated assets
-          addGeneratedAsset('Research Tools', 'research_tools.json', 'Tools and applications specification');
-          
-        } else {
-          resultDiv.innerHTML = `
-            <div class="error-message">
-              <i class="fas fa-exclamation-triangle"></i> Failed to create tools: ${result.error}
-            </div>
-          `;
-        }
-        
-      } catch (error) {
-        console.error('Tools creation error:', error);
-        resultDiv.innerHTML = `
-          <div class="error-message">
-            <i class="fas fa-exclamation-triangle"></i> Error creating tools: ${error.message}
-          </div>
-        `;
-      } finally {
-        // Re-enable button
-        button.disabled = false;
-        button.innerHTML = '<i class="fas fa-wrench"></i> Create Tools & Apps';
       }
     }
 
     // Helper functions
-    function getFileExtension(language) {
-      const extensions = {
-        'python': 'py',
-        'javascript': 'js',
-        'java': 'java',
-        'cpp': 'cpp',
-        'r': 'r'
-      };
-      return extensions[language] || 'txt';
-    }
-
-    function getToolIcon(toolType) {
-      const icons = {
-        'webApplication': 'globe',
-        'desktopTool': 'desktop',
-        'apiService': 'server',
-        'mobileApp': 'mobile-alt'
-      };
-      return icons[toolType] || 'tool';
-    }
-
-    function addGeneratedAsset(name, filename, description) {
-      const assetsList = document.getElementById('generatedAssets');
+    function extractKeywords(content) {
+      const keywords = [];
       
-      // Remove the "no assets" message if it exists
-      const noAssetsItem = assetsList.querySelector('.asset-item');
-      if (noAssetsItem && noAssetsItem.querySelector('span').textContent === 'No assets generated yet') {
-        noAssetsItem.remove();
-      }
+      // Common research keywords
+      const keywordPatterns = [
+        /machine learning|ml|ai|artificial intelligence/gi,
+        /deep learning|neural network|cnn|rnn|lstm/gi,
+        /optimization|gradient descent|backpropagation/gi,
+        /computer vision|image processing|object detection/gi,
+        /natural language processing|nlp|transformer|bert/gi,
+        /reinforcement learning|rl|q-learning/gi,
+        /clustering|classification|regression/gi,
+        /data mining|big data|analytics/gi,
+        /algorithm|methodology|framework/gi,
+        /mathematical model|equation|formula/gi
+      ];
       
-      // Add new asset
-      const assetItem = document.createElement('div');
-      assetItem.className = 'asset-item';
-      assetItem.onclick = () => downloadAsset(filename, 'Asset content');
-      assetItem.innerHTML = `
-        <i class="fas fa-file"></i>
-        <span>${name}</span>
-        <small>${description}</small>
-      `;
-      
-      assetsList.appendChild(assetItem);
-    }
-
-    function downloadAsset(filename, content) {
-      const blob = new Blob([content], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      
-      showNotification(`Downloaded ${filename}`, 'success');
-    }
-
-    // Enhanced chat functions for AI Research Assistant
-    function sendChatMessage() {
-      const input = document.getElementById('chatInput');
-      const message = input.value.trim();
-      
-      if (!message) return;
-      
-      // Add user message
-      addChatMessage('user', message);
-      input.value = '';
-      
-      // Process with AI Research Assistant
-      processAIResearchMessage(message);
-    }
-
-    function addChatMessage(sender, content) {
-      const chatMessages = document.getElementById('chatMessages');
-      const messageDiv = document.createElement('div');
-      messageDiv.className = `message ${sender}-message`;
-      
-      const avatar = sender === 'user' ? '👤' : '🤖';
-      const name = sender === 'user' ? 'You' : 'AI Assistant';
-      
-      messageDiv.innerHTML = `
-        <div class="message-avatar">${avatar}</div>
-        <div class="message-content">
-          <strong>${name}:</strong> ${content}
-        </div>
-      `;
-      
-      chatMessages.appendChild(messageDiv);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
-    async function processAIResearchMessage(message) {
-      // Show typing indicator
-      const chatMessages = document.getElementById('chatMessages');
-      const typingDiv = document.createElement('div');
-      typingDiv.className = 'message ai-message typing';
-      typingDiv.innerHTML = `
-        <div class="message-avatar">🤖</div>
-        <div class="message-content">
-          <div class="typing-indicator">
-            <span></span><span></span><span></span>
-          </div>
-        </div>
-      `;
-      chatMessages.appendChild(typingDiv);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-      
-      try {
-        // Process message based on keywords
-        let response = '';
-        
-        if (message.toLowerCase().includes('analyze') || message.toLowerCase().includes('analysis')) {
-          response = await analyzeResearchPaper(message);
-        } else if (message.toLowerCase().includes('model') || message.toLowerCase().includes('equation')) {
-          response = await extractMathematicalModelsChat(message);
-        } else if (message.toLowerCase().includes('code') || message.toLowerCase().includes('library')) {
-          response = await generateCodeLibraryChat(message);
-        } else if (message.toLowerCase().includes('tool') || message.toLowerCase().includes('app')) {
-          response = await createResearchToolsChat(message);
-        } else {
-          response = await generalResearchResponse(message);
+      keywordPatterns.forEach(pattern => {
+        const matches = content.match(pattern);
+        if (matches) {
+          keywords.push(...matches.map(m => m.toLowerCase()));
         }
-        
-        // Remove typing indicator and add response
-        chatMessages.removeChild(typingDiv);
-        addChatMessage('ai', response);
-        
-      } catch (error) {
-        console.error('AI processing error:', error);
-        chatMessages.removeChild(typingDiv);
-        addChatMessage('ai', 'Sorry, I encountered an error processing your request. Please try again.');
-      }
+      });
+      
+      // Extract technical terms
+      const technicalTerms = content.match(/[A-Z][a-z]+(?:\d+|[α-ωΑ-Ω])?/g) || [];
+      keywords.push(...technicalTerms.slice(0, 10));
+      
+      return [...new Set(keywords)].slice(0, 15);
     }
 
-    async function analyzeResearchPaper(message) {
-      if (!selectedPaper) {
-        return 'Please select a research paper first to analyze.';
-      }
-      
-      const paperContent = selectedPaper.fullText || selectedPaper.abstract || '';
-      
-      return `📊 **Research Analysis for "${selectedPaper.title}"**
-      
-**Key Findings:**
-- Research Domain: ${extractResearchDomain(paperContent)}
-- Methodology: ${extractKeyConcepts(paperContent).join(', ')}
-- Content Length: ${paperContent.length} characters
-
-**Analysis:**
-This research paper appears to focus on ${extractResearchDomain(paperContent).toLowerCase()} with a ${extractKeyConcepts(paperContent)[0] || 'research'} approach. The paper contains ${paperContent.length > 1000 ? 'substantial' : 'limited'} content for analysis.
-
-**Recommendations:**
-1. Extract mathematical models for implementation
-2. Generate code library for practical use
-3. Create research tools for broader application
-4. Design experiments to validate findings
-
-Would you like me to perform any of these specific analyses?`;
-    }
-
-    async function extractMathematicalModelsChat(message) {
-      if (!selectedPaper) {
-        return 'Please select a research paper first to extract mathematical models.';
-      }
-      
-      return `📐 **Mathematical Model Extraction**
-      
-I can extract mathematical models, equations, and algorithms from the research paper. Click the "Extract Models & Equations" button in the left panel to get started.
-
-This will:
-- Identify mathematical expressions and formulas
-- Extract algorithm descriptions
-- Provide implementation guidelines
-- Generate downloadable model files
-
-The extracted models can be used for:
-- Code implementation
-- Further research
-- Educational purposes
-- Practical applications
-
-Would you like me to proceed with the extraction?`;
-    }
-
-    async function generateCodeLibraryChat(message) {
-      if (!selectedPaper) {
-        return 'Please select a research paper first to generate a code library.';
-      }
-      
-      return `💻 **Code Library Generation**
-      
-I can generate production-ready code libraries based on the research paper concepts. Click the "Generate Library" button in the left panel to get started.
-
-Available languages:
-- Python (recommended for research)
-- JavaScript (web applications)
-- Java (enterprise applications)
-- C++ (high-performance computing)
-- R (statistical analysis)
-
-The generated library will include:
-- Main implementation classes
-- Example usage code
-- Documentation
-- Requirements file
-- Downloadable source code
-
-Would you like me to generate a library in your preferred language?`;
-    }
-
-    async function createResearchToolsChat(message) {
-      if (!selectedPaper) {
-        return 'Please select a research paper first to create research tools.';
-      }
-      
-      return `🛠️ **Research Tools Creation**
-      
-I can create practical tools and applications based on the research paper concepts. Click the "Create Tools & Apps" button in the left panel to get started.
-
-Available tool types:
-- Web Applications (React.js, Node.js)
-- Desktop Tools (Electron, Python)
-- API Services (FastAPI, Docker)
-- Mobile Apps (React Native, Firebase)
-
-Each tool will include:
-- Detailed specifications
-- Feature descriptions
-- Technology stack recommendations
-- Implementation guidelines
-
-Would you like me to create tools based on this research?`;
-    }
-
-    async function generalResearchResponse(message) {
-      return `🤖 **AI Research Assistant**
-      
-I'm here to help you extract maximum value from the research paper "${selectedPaper ? selectedPaper.title : 'your selected paper'}".
-
-**What I can do:**
-- 📊 Analyze research methodology and findings
-- 📐 Extract mathematical models and equations
-- 💻 Generate production-ready code libraries
-- 🛠️ Create practical tools and applications
-- 🔬 Design experiments and validation methods
-
-**Quick Actions:**
-- Use the tools in the left panel for automated asset generation
-- Ask me specific questions about the research
-- Request code implementations or explanations
-
-How can I help you today?`;
-    }
-
-    // Quick action functions
-    function quickAction(action) {
-      const actions = {
-        'analyze': 'Please analyze this research paper and explain its key findings and methodology.',
-        'models': 'Extract mathematical models and equations from this research paper.',
-        'library': 'Generate a Python code library based on this research paper.',
-        'tools': 'Create practical tools and applications from this research paper.'
-      };
-      
-      const message = actions[action] || 'Please help me with this research paper.';
-      document.getElementById('chatInput').value = message;
-      sendChatMessage();
-    }
-
-    // Helper functions for chat
     function extractResearchDomain(content) {
       if (content.match(/machine learning|ml|ai|artificial intelligence/i)) return 'AI/ML';
       if (content.match(/computer vision|cv|image/i)) return 'Computer Vision';
       if (content.match(/nlp|natural language/i)) return 'NLP';
       if (content.match(/optimization/i)) return 'Optimization';
       return 'General Research';
-    }
-
-    function extractKeyConcepts(content) {
-      const concepts = [];
-      const conceptPatterns = [
-        /algorithm/i,
-        /model/i,
-        /framework/i,
-        /methodology/i,
-        /approach/i,
-        /technique/i
-      ];
-      
-      conceptPatterns.forEach(pattern => {
-        if (content.match(pattern)) {
-          concepts.push(pattern.source.replace(/[\/i]/g, ''));
-        }
-      });
-      
-      return concepts.length > 0 ? concepts : ['research', 'analysis', 'implementation'];
     }
 
     // Add typing indicator CSS
