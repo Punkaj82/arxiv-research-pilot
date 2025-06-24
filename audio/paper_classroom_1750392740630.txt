@@ -1,0 +1,8 @@
+Good morning class. Today's lecture covers "PhantomHunter: Detecting Unseen Privately-Tuned LLM-Generated Text via Family-Aware Learning" by Yuhui Shi, Yehan Yang, Qiang Sheng, Hao Mi, Beizhe Hu, Chaoxi Xu, Juan Cao. 
+                      This research, published on 6/18/2025, 
+                      falls under the category of Computer Science CL. 
+                      Let me break this down for you: With the popularity of large language models (LLMs), undesirable societal problems like misinformation production and academic misconduct have been more severe, making LLM-generated text detection now of unprecedented importance. Although existing methods have made remarkable progress, a new challenge posed by text from privately tuned LLMs remains underexplored. Users could easily possess private LLMs by fine-tuning an open-source one with private corpora, resulting in a significant performance drop of existing detectors in practice. To address this issue, we propose PhantomHunter, an LLM-generated text detector specialized for detecting text from unseen, privately-tuned LLMs. Its family-aware learning framework captures family-level traits shared across the base models and their derivati... 
+                      The methodology involves several key components. 
+                      The results demonstrate significant improvements in the field. 
+                      This work has important implications for future research. 
+                      Any questions about this paper?

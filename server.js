@@ -906,86 +906,46 @@ function extractKeywords(content) {
   return [...new Set(keywords)].slice(0, 15);
 }
 
-// Find related research papers and studies with real links
+// Helper to fetch and parse arXiv results
+async function fetchArxivPapers(keywords, maxResults = 5) {
+  const query = encodeURIComponent(keywords.join(' '));
+  const url = `http://export.arxiv.org/api/query?search_query=all:${query}&sortBy=relevance&max_results=10`;
+
+  const response = await axios.get(url, { headers: { 'User-Agent': 'ArXiv-Fetcher/1.0' } });
+  const xml = response.data;
+  const result = await xml2js.parseStringPromise(xml);
+
+  // Parse entries
+  const entries = (result.feed.entry || []).map(entry => ({
+    title: entry.title[0].trim(),
+    authors: (entry.author || []).map(a => a.name[0]).join(', '),
+    abstract: entry.summary[0].replace(/\s+/g, ' ').trim(),
+    published: entry.published[0],
+    link: entry.id[0],
+    pdf: (entry.link || []).find(l => l.$.type === 'application/pdf')?.$.href || '',
+  }));
+
+  // Filter by keyword match in abstract and return top 5
+  const filtered = entries
+    .filter(paper => keywords.some(kw => paper.abstract.toLowerCase().includes(kw.toLowerCase())))
+    .slice(0, maxResults);
+
+  return filtered;
+}
+
+// Replace the related research logic:
 async function findRelatedResearch(keywords, domain) {
   try {
-    console.log('🔍 Searching for related research with real links...');
-    
-    // Generate real search URLs for different research databases
-    const searchQueries = keywords.slice(0, 3).join(' ');
-    const encodedQuery = encodeURIComponent(searchQueries);
-    
-    const researchSources = {
-      arxiv: `https://arxiv.org/search/?query=${encodedQuery}&searchtype=all&source=header`,
-      googleScholar: `https://scholar.google.com/scholar?q=${encodedQuery}`,
-      researchGate: `https://www.researchgate.net/search/publication?q=${encodedQuery}`,
-      semanticScholar: `https://www.semanticscholar.org/search?q=${encodedQuery}`,
-      ieee: `https://ieeexplore.ieee.org/search/searchresult.jsp?queryText=${encodedQuery}`,
-      acm: `https://dl.acm.org/action/doSearch?AllField=${encodedQuery}`,
-      springer: `https://link.springer.com/search?query=${encodedQuery}`,
-      sciencedirect: `https://www.sciencedirect.com/search?qs=${encodedQuery}`
-    };
-    
-    // Generate related papers with real links
-    const relatedPapers = [
-      {
-        title: `${domain} Research: Recent Advances in ${keywords[0] || 'Machine Learning'}`,
-        authors: 'Research Team A',
-        year: '2024',
-        abstract: `This paper explores recent developments in ${keywords[0] || 'machine learning'} and its applications in ${domain.toLowerCase()}.`,
-        relevance: 'High',
-        citations: Math.floor(Math.random() * 100) + 10,
-        links: {
-          arxiv: `https://arxiv.org/abs/${generateArxivId()}`,
-          googleScholar: `https://scholar.google.com/scholar?q=${encodeURIComponent(keywords[0] || 'machine learning')}`,
-          researchGate: `https://www.researchgate.net/search/publication?q=${encodeURIComponent(keywords[0] || 'machine learning')}`,
-          pdf: `https://arxiv.org/pdf/${generateArxivId()}.pdf`
-        },
-        doi: `10.1000/${generateArxivId()}`,
-        venue: `${domain} Conference 2024`
-      },
-      {
-        title: `Mathematical Foundations of ${keywords[1] || 'Deep Learning'}`,
-        authors: 'Research Team B',
-        year: '2023',
-        abstract: `A comprehensive analysis of mathematical models underlying ${keywords[1] || 'deep learning'} algorithms.`,
-        relevance: 'Medium',
-        citations: Math.floor(Math.random() * 50) + 5,
-        links: {
-          arxiv: `https://arxiv.org/abs/${generateArxivId()}`,
-          googleScholar: `https://scholar.google.com/scholar?q=${encodeURIComponent(keywords[1] || 'deep learning')}`,
-          researchGate: `https://www.researchgate.net/search/publication?q=${encodeURIComponent(keywords[1] || 'deep learning')}`,
-          pdf: `https://arxiv.org/pdf/${generateArxivId()}.pdf`
-        },
-        doi: `10.1000/${generateArxivId()}`,
-        venue: 'Journal of Machine Learning Research'
-      },
-      {
-        title: `${domain} Applications: From Theory to Practice`,
-        authors: 'Research Team C',
-        year: '2024',
-        abstract: `Practical applications and implementations of ${domain.toLowerCase()} concepts in real-world scenarios.`,
-        relevance: 'High',
-        citations: Math.floor(Math.random() * 75) + 15,
-        links: {
-          arxiv: `https://arxiv.org/abs/${generateArxivId()}`,
-          googleScholar: `https://scholar.google.com/scholar?q=${encodeURIComponent(domain.toLowerCase())}`,
-          researchGate: `https://www.researchgate.net/search/publication?q=${encodeURIComponent(domain.toLowerCase())}`,
-          pdf: `https://arxiv.org/pdf/${generateArxivId()}.pdf`
-        },
-        doi: `10.1000/${generateArxivId()}`,
-        venue: 'International Conference on AI'
-      }
-    ];
-    
+    const papers = await fetchArxivPapers(keywords, 5);
     return {
-      papers: relatedPapers,
-      totalFound: relatedPapers.length,
+      papers,
+      totalFound: papers.length,
       searchKeywords: keywords.slice(0, 5),
-      searchSources: researchSources,
-      searchQuery: searchQueries
+      searchSources: {
+        arxiv: `https://arxiv.org/search/?query=${encodeURIComponent(keywords.join(' '))}&searchtype=all`
+      },
+      searchQuery: keywords.join(' ')
     };
-    
   } catch (error) {
     console.error('Related research search error:', error);
     return {

@@ -1,0 +1,7 @@
+Welcome to our research podcast. Today we're discussing "Dense SAE Latents Are Features, Not Bugs" by Xiaoqing Sun, Alessandro Stolfo, Joshua Engels, Ben Wu, Senthooran Rajamanoharan, Mrinmaya Sachan, Max Tegmark. 
+                      This paper, published on 6/18/2025, 
+                      explores Computer Science LG. 
+                      Here's what you need to know: Sparse autoencoders (SAEs) are designed to extract interpretable features from language models by enforcing a sparsity constraint. Ideally, training an SAE would yield latents that are both sparse and semantically meaningful. However, many SAE latents activate frequently (i.e., are \emph{dense}), raising concerns that they may be undesirable artifacts of the training procedure. In this work, we systematically investigate the geometry, function, and origin of dense latents and show that they are ... 
+                      The key findings suggest important implications for the field. 
+                      For more details, check out the full paper on arXiv. 
+                      Thanks for listening to our research summary.
