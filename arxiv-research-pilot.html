@@ -3902,6 +3902,33 @@ console.log('This would create a working application based on the research paper
       }
     `;
     document.head.appendChild(style);
+
+    async function aiResearchAgent(paperContent, researchType = 'comprehensive') {
+      try {
+        const keywords = extractKeywords(paperContent);
+        const domain = extractResearchDomain(paperContent);
+
+        // Run all tasks in parallel
+        const [relatedResearch, models, applications, projects, summary] = await Promise.all([
+          findRelatedResearch(keywords, domain),
+          extractMathematicalModels(paperContent),
+          findMathematicalApplications(keywords, domain),
+          findResearchProjects(keywords, domain),
+          generateResearchSummary(paperContent, keywords, domain)
+        ]);
+
+        return {
+          relatedResearch,
+          models,
+          applications,
+          projects,
+          summary,
+          status: "AI Research Agent Ready"
+        };
+      } catch (error) {
+        return { error: error.message };
+      }
+    }
   </script>
 </body>
 </html> 
