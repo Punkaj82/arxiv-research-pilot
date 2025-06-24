@@ -391,6 +391,526 @@ function generateMockAudio(text, filename) {
 }
 
 // ============================================================================
+// AI RESEARCH ASSISTANT FUNCTIONS
+// ============================================================================
+
+// Extract mathematical models from research papers
+async function extractMathematicalModels(paperContent) {
+  try {
+    // Use OpenAI API if available, otherwise use local analysis
+    const hasOpenAI = process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'your-openai-api-key-here';
+    
+    if (hasOpenAI) {
+      const { Configuration, OpenAIApi } = require('openai');
+      const configuration = new Configuration({
+        apiKey: process.env.OPENAI_API_KEY,
+      });
+      const openai = new OpenAIApi(configuration);
+      
+      const prompt = `Extract mathematical models, equations, and algorithms from this research paper. 
+      Provide them in a structured format with:
+      1. Model definitions
+      2. Mathematical equations
+      3. Algorithm pseudocode
+      4. Implementation notes
+      
+      Research Paper Content:
+      ${paperContent.substring(0, 3000)}
+      
+      Format the response as:
+      ## Mathematical Models
+      [List of models with equations]
+      
+      ## Algorithms
+      [Algorithm descriptions with pseudocode]
+      
+      ## Implementation
+      [Implementation guidelines]`;
+      
+      const response = await openai.createChatCompletion({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are an expert mathematician and computer scientist specializing in extracting mathematical models from research papers.'
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        max_tokens: 2000,
+        temperature: 0.3
+      });
+      
+      return {
+        success: true,
+        models: response.data.choices[0].message.content,
+        source: 'OpenAI GPT-3.5'
+      };
+    } else {
+      // Local mathematical model extraction
+      return extractMathematicalModelsLocal(paperContent);
+    }
+  } catch (error) {
+    console.error('Mathematical model extraction error:', error);
+    return extractMathematicalModelsLocal(paperContent);
+  }
+}
+
+// Local mathematical model extraction
+function extractMathematicalModelsLocal(paperContent) {
+  const models = [];
+  const algorithms = [];
+  
+  // Extract mathematical expressions
+  const mathPatterns = [
+    /\\[([^\\]+)\\]/g,  // LaTeX expressions
+    /\\\(([^\\]+)\\\)/g, // Inline math
+    /\\begin\{equation\}(.*?)\\end\{equation\}/gs, // Equation blocks
+    /\\begin\{align\}(.*?)\\end\{align\}/gs, // Align blocks
+    /\\begin\{algorithm\}(.*?)\\end\{algorithm\}/gs, // Algorithm blocks
+  ];
+  
+  // Extract algorithms and pseudocode
+  const algorithmPatterns = [
+    /Algorithm\s+\d+[:\s]*([^.]*)/gi,
+    /Function\s+([^(]+)\([^)]*\)/gi,
+    /procedure\s+([^(]+)\([^)]*\)/gi,
+    /def\s+([^(]+)\([^)]*\)/gi,
+  ];
+  
+  // Find mathematical expressions
+  mathPatterns.forEach(pattern => {
+    const matches = paperContent.match(pattern);
+    if (matches) {
+      models.push(...matches);
+    }
+  });
+  
+  // Find algorithms
+  algorithmPatterns.forEach(pattern => {
+    const matches = paperContent.match(pattern);
+    if (matches) {
+      algorithms.push(...matches);
+    }
+  });
+  
+  return {
+    success: true,
+    models: {
+      mathematicalExpressions: models.slice(0, 10),
+      algorithms: algorithms.slice(0, 10),
+      implementation: generateImplementationGuidelines(paperContent)
+    },
+    source: 'Local Analysis'
+  };
+}
+
+// Generate code libraries from research
+async function generateCodeLibrary(paperContent, language = 'python') {
+  try {
+    const hasOpenAI = process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'your-openai-api-key-here';
+    
+    if (hasOpenAI) {
+      const { Configuration, OpenAIApi } = require('openai');
+      const configuration = new Configuration({
+        apiKey: process.env.OPENAI_API_KEY,
+      });
+      const openai = new OpenAIApi(configuration);
+      
+      const prompt = `Generate a complete ${language} library based on this research paper. 
+      Include:
+      1. Main class/function implementations
+      2. Example usage
+      3. Documentation
+      4. Tests
+      5. Requirements
+      
+      Research Paper Content:
+      ${paperContent.substring(0, 3000)}
+      
+      Create a production-ready library that implements the research concepts.`;
+      
+      const response = await openai.createChatCompletion({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'system',
+            content: `You are an expert software engineer specializing in ${language} library development.`
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        max_tokens: 3000,
+        temperature: 0.4
+      });
+      
+      return {
+        success: true,
+        library: response.data.choices[0].message.content,
+        source: 'OpenAI GPT-3.5'
+      };
+    } else {
+      return generateCodeLibraryLocal(paperContent, language);
+    }
+  } catch (error) {
+    console.error('Code library generation error:', error);
+    return generateCodeLibraryLocal(paperContent, language);
+  }
+}
+
+// Local code library generation
+function generateCodeLibraryLocal(paperContent, language = 'python') {
+  const title = extractPaperTitle(paperContent);
+  const concepts = extractKeyConcepts(paperContent);
+  
+  let libraryCode = '';
+  
+  if (language === 'python') {
+    libraryCode = `"""
+${title} - Research Implementation Library
+Generated from research paper analysis
+"""
+
+import numpy as np
+import pandas as pd
+from typing import List, Dict, Any, Optional
+import logging
+
+class ResearchImplementation:
+    """
+    Main implementation class based on research paper: ${title}
+    """
+    
+    def __init__(self, config: Dict[str, Any] = None):
+        self.config = config or {}
+        self.logger = logging.getLogger(__name__)
+        
+    def preprocess_data(self, data: np.ndarray) -> np.ndarray:
+        """
+        Preprocess data according to research methodology
+        """
+        # Implementation based on research paper
+        processed_data = data.copy()
+        # Add preprocessing logic here
+        return processed_data
+        
+    def train_model(self, X: np.ndarray, y: np.ndarray) -> Any:
+        """
+        Train model based on research algorithm
+        """
+        # Implementation based on research methodology
+        self.logger.info("Training model based on research paper")
+        # Add training logic here
+        return self
+        
+    def predict(self, X: np.ndarray) -> np.ndarray:
+        """
+        Make predictions using trained model
+        """
+        # Implementation based on research paper
+        # Add prediction logic here
+        return np.zeros(len(X))
+        
+    def evaluate(self, X: np.ndarray, y: np.ndarray) -> Dict[str, float]:
+        """
+        Evaluate model performance
+        """
+        predictions = self.predict(X)
+        # Add evaluation metrics here
+        return {"accuracy": 0.0, "precision": 0.0, "recall": 0.0}
+
+# Example usage
+if __name__ == "__main__":
+    # Example implementation
+    model = ResearchImplementation()
+    print("Research implementation library ready!")
+`;
+  }
+  
+  return {
+    success: true,
+    library: libraryCode,
+    requirements: generateRequirements(concepts),
+    documentation: generateDocumentation(title, concepts),
+    source: 'Local Generation'
+  };
+}
+
+// Create tools and applications from research concepts
+async function createResearchTools(paperContent) {
+  try {
+    const hasOpenAI = process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'your-openai-api-key-here';
+    
+    if (hasOpenAI) {
+      const { Configuration, OpenAIApi } = require('openai');
+      const configuration = new Configuration({
+        apiKey: process.env.OPENAI_API_KEY,
+      });
+      const openai = new OpenAIApi(configuration);
+      
+      const prompt = `Create practical tools and applications based on this research paper. 
+      Include:
+      1. Web application concept
+      2. Desktop tool design
+      3. API service specification
+      4. Mobile app concept
+      5. Command-line tool
+      
+      Research Paper Content:
+      ${paperContent.substring(0, 3000)}
+      
+      Provide detailed specifications for each tool.`;
+      
+      const response = await openai.createChatCompletion({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are an expert product manager and software architect specializing in creating practical tools from research.'
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        max_tokens: 2500,
+        temperature: 0.6
+      });
+      
+      return {
+        success: true,
+        tools: response.data.choices[0].message.content,
+        source: 'OpenAI GPT-3.5'
+      };
+    } else {
+      return createResearchToolsLocal(paperContent);
+    }
+  } catch (error) {
+    console.error('Research tools creation error:', error);
+    return createResearchToolsLocal(paperContent);
+  }
+}
+
+// Local research tools creation
+function createResearchToolsLocal(paperContent) {
+  const title = extractPaperTitle(paperContent);
+  const concepts = extractKeyConcepts(paperContent);
+  const domain = extractResearchDomain(paperContent);
+  
+  const tools = {
+    webApplication: {
+      name: `${title} Web Tool`,
+      description: `Web-based implementation of ${title} research`,
+      features: [
+        'Interactive data visualization',
+        'Real-time processing',
+        'User-friendly interface',
+        'Export capabilities'
+      ],
+      techStack: ['React.js', 'Node.js', 'Python Flask', 'PostgreSQL']
+    },
+    desktopTool: {
+      name: `${title} Desktop App`,
+      description: `Desktop application for ${title}`,
+      features: [
+        'Offline processing',
+        'High-performance computing',
+        'Local data storage',
+        'Batch processing'
+      ],
+      techStack: ['Electron', 'Python', 'SQLite', 'TensorFlow']
+    },
+    apiService: {
+      name: `${title} API`,
+      description: `RESTful API service for ${title}`,
+      features: [
+        'Scalable microservice',
+        'JSON API endpoints',
+        'Authentication',
+        'Rate limiting'
+      ],
+      techStack: ['FastAPI', 'Docker', 'Redis', 'MongoDB']
+    },
+    mobileApp: {
+      name: `${title} Mobile`,
+      description: `Mobile app for ${title}`,
+      features: [
+        'Cross-platform support',
+        'Offline capability',
+        'Push notifications',
+        'Cloud sync'
+      ],
+      techStack: ['React Native', 'Firebase', 'TensorFlow Lite']
+    }
+  };
+  
+  return {
+    success: true,
+    tools: tools,
+    source: 'Local Generation'
+  };
+}
+
+// Helper functions
+function extractPaperTitle(content) {
+  const titleMatch = content.match(/Title[:\s]*([^\n]+)/i);
+  return titleMatch ? titleMatch[1].trim() : 'Research Paper';
+}
+
+function extractKeyConcepts(content) {
+  const concepts = [];
+  const conceptPatterns = [
+    /algorithm/i,
+    /model/i,
+    /framework/i,
+    /methodology/i,
+    /approach/i,
+    /technique/i
+  ];
+  
+  conceptPatterns.forEach(pattern => {
+    if (content.match(pattern)) {
+      concepts.push(pattern.source.replace(/[\/i]/g, ''));
+    }
+  });
+  
+  return concepts.length > 0 ? concepts : ['research', 'analysis', 'implementation'];
+}
+
+function extractResearchDomain(content) {
+  if (content.match(/machine learning|ml|ai|artificial intelligence/i)) return 'AI/ML';
+  if (content.match(/computer vision|cv|image/i)) return 'Computer Vision';
+  if (content.match(/nlp|natural language/i)) return 'NLP';
+  if (content.match(/optimization/i)) return 'Optimization';
+  return 'General Research';
+}
+
+function generateImplementationGuidelines(content) {
+  return {
+    setup: 'Install required dependencies and configure environment',
+    preprocessing: 'Prepare data according to research methodology',
+    training: 'Train models using specified algorithms',
+    evaluation: 'Evaluate performance using research metrics',
+    deployment: 'Deploy implementation for production use'
+  };
+}
+
+function generateRequirements(concepts) {
+  const baseRequirements = ['numpy', 'pandas', 'scikit-learn'];
+  const conceptRequirements = {
+    'algorithm': ['scipy', 'matplotlib'],
+    'model': ['tensorflow', 'pytorch'],
+    'framework': ['flask', 'fastapi'],
+    'methodology': ['seaborn', 'plotly']
+  };
+  
+  const requirements = [...baseRequirements];
+  concepts.forEach(concept => {
+    if (conceptRequirements[concept.toLowerCase()]) {
+      requirements.push(...conceptRequirements[concept.toLowerCase()]);
+    }
+  });
+  
+  return [...new Set(requirements)];
+}
+
+function generateDocumentation(title, concepts) {
+  return {
+    overview: `Implementation of ${title} research paper`,
+    installation: 'pip install -r requirements.txt',
+    usage: 'Basic usage examples and API documentation',
+    examples: 'Code examples demonstrating key features',
+    api: 'Complete API reference documentation'
+  };
+}
+
+// ============================================================================
+// AI RESEARCH ASSISTANT API ENDPOINTS
+// ============================================================================
+
+// Extract mathematical models endpoint
+app.post('/api/extract-models', async (req, res) => {
+  try {
+    const { paperContent } = req.body;
+    
+    if (!paperContent) {
+      return res.status(400).json({
+        success: false,
+        error: 'Paper content is required'
+      });
+    }
+    
+    console.log('Extracting mathematical models from research paper');
+    const result = await extractMathematicalModels(paperContent);
+    
+    res.json(result);
+    
+  } catch (error) {
+    console.error('Model extraction error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to extract mathematical models'
+    });
+  }
+});
+
+// Generate code library endpoint
+app.post('/api/generate-library', async (req, res) => {
+  try {
+    const { paperContent, language = 'python' } = req.body;
+    
+    if (!paperContent) {
+      return res.status(400).json({
+        success: false,
+        error: 'Paper content is required'
+      });
+    }
+    
+    console.log(`Generating ${language} library from research paper`);
+    const result = await generateCodeLibrary(paperContent, language);
+    
+    res.json(result);
+    
+  } catch (error) {
+    console.error('Library generation error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to generate code library'
+    });
+  }
+});
+
+// Create research tools endpoint
+app.post('/api/create-tools', async (req, res) => {
+  try {
+    const { paperContent } = req.body;
+    
+    if (!paperContent) {
+      return res.status(400).json({
+        success: false,
+        error: 'Paper content is required'
+      });
+    }
+    
+    console.log('Creating research tools from paper');
+    const result = await createResearchTools(paperContent);
+    
+    res.json(result);
+    
+  } catch (error) {
+    console.error('Tools creation error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to create research tools'
+    });
+  }
+});
+
+// ============================================================================
 // API ROUTES
 // ============================================================================
 
