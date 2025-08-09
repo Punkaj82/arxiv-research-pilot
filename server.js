@@ -1898,6 +1898,12 @@ const emailConfig = {
   }
 };
 
+// Log email configuration status (without exposing passwords)
+console.log('Email configuration status:');
+console.log('- EMAIL_USER set:', !!process.env.EMAIL_USER);
+console.log('- EMAIL_PASS set:', !!process.env.EMAIL_PASS);
+console.log('- Using email:', emailConfig.auth.user);
+
        // Create transporter
        const transporter = nodemailer.createTransport(emailConfig);
 
@@ -1978,9 +1984,25 @@ This email was sent from the Arxiv Research Pilot contact form.
     
   } catch (error) {
     console.error('Error sending feedback email:', error);
+    console.error('Error details:', {
+      message: error.message,
+      code: error.code,
+      command: error.command
+    });
+    
+    // Provide more specific error messages
+    let errorMessage = 'Failed to send feedback email';
+    if (error.code === 'EAUTH') {
+      errorMessage = 'Email authentication failed. Please check email credentials.';
+    } else if (error.code === 'ECONNECTION') {
+      errorMessage = 'Email connection failed. Please check network settings.';
+    } else if (error.message.includes('Invalid login')) {
+      errorMessage = 'Invalid email credentials. Please check username and password.';
+    }
+    
     res.status(500).json({
       success: false,
-      error: 'Failed to send feedback email',
+      error: errorMessage,
       details: error.message
     });
   }
