@@ -629,6 +629,10 @@
               </select>
             </div>
             <div class="input-group">
+              <label for="keywords">Keywords (Optional)</label>
+              <input type="text" id="keywords" class="form-control" placeholder="Enter keywords to narrow search (e.g., neural networks, transformers, quantum)">
+            </div>
+            <div class="input-group">
               <label for="startDate">Start Date</label>
               <input type="date" id="startDate" class="form-control">
             </div>
@@ -674,6 +678,7 @@
     // DOM elements
     const elements = {
       category: document.getElementById('category'),
+      keywords: document.getElementById('keywords'),
       startDate: document.getElementById('startDate'),
       endDate: document.getElementById('endDate'),
       searchBtn: document.getElementById('searchBtn'),
@@ -778,6 +783,7 @@
     // Search papers - Updated to use server API
     async function searchPapers() {
       const category = elements.category.value;
+      const keywords = elements.keywords.value.trim();
       const startDate = elements.startDate.value;
       const endDate = elements.endDate.value;
       
@@ -792,6 +798,7 @@
       try {
         const params = new URLSearchParams({
           category: category,
+          ...(keywords && { keywords: keywords }),
           ...(startDate && { startDate: startDate.replace(/-/g, '') }),
           ...(endDate && { endDate: endDate.replace(/-/g, '') })
         });

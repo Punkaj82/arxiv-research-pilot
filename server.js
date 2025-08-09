@@ -922,7 +922,10 @@ async function fetchArxivPapers(keywords, maxResults = 5) {
     abstract: entry.summary[0].replace(/\s+/g, ' ').trim(),
     published: entry.published[0],
     link: entry.id[0],
-    pdf: (entry.link || []).find(l => l.$.type === 'application/pdf')?.$.href || '',
+    pdf: (() => {
+      const pdfLink = (entry.link || []).find(l => l.$.type === 'application/pdf');
+      return pdfLink ? pdfLink.$.href : '';
+    })(),
   }));
 
   // Filter by keyword match in abstract and return top 5
@@ -1590,13 +1593,19 @@ app.post('/api/generate-research-summary', async (req, res) => {
 // Get papers from arXiv
 app.get('/api/papers', async (req, res) => {
   try {
-    const { category, startDate, endDate } = req.query;
+    const { category, keywords, startDate, endDate } = req.query;
 
     if (!category) {
       return res.status(400).json({ success: false, error: 'Category is required' });
     }
 
     let query = `cat:${category}`;
+    
+    // Add keywords to query if provided
+    if (keywords && keywords.trim()) {
+      const keywordTerms = keywords.trim().split(/\s+/).map(term => `"${term}"`).join(' OR ');
+      query += ` AND (${keywordTerms})`;
+    }
     
     if (startDate && endDate) {
       const start = startDate.replace(/-/g, '');
