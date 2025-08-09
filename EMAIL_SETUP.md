@@ -1,7 +1,7 @@
 # Email Setup for Arxiv Research Pilot
 
 ## Overview
-The Contact Us form now sends actual emails to `pankaj@arxivresearch.com` when users submit feedback.
+The Contact Us form now sends actual emails to `infonovamind25@gmail.com` when users submit feedback.
 
 ## Setup Instructions
 
@@ -70,7 +70,7 @@ require('dotenv').config();
 
 2. **Open the contact form** and submit feedback
 
-3. **Check your email** at `pankaj@arxivresearch.com`
+3. **Check your email** at `infonovamind25@gmail.com`
 
 4. **Check server logs** for email sending status
 

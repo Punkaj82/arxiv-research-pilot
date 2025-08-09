@@ -1914,11 +1914,11 @@ app.post('/api/contact', async (req, res) => {
       });
     }
 
-    // Email content
-    const mailOptions = {
-      from: emailConfig.auth.user,
-      to: 'pankaj@arxivresearch.com',
-      subject: `[Arxiv Research Pilot] ${category} - ${name}`,
+               // Email content
+           const mailOptions = {
+             from: emailConfig.auth.user,
+             to: 'infonovamind25@gmail.com',
+             subject: `[Arxiv Research Pilot] ${category} - ${name}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 10px;">
