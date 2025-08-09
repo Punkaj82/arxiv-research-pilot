@@ -118,6 +118,17 @@
       .input-group {
         min-width: 100%;
       }
+      .search-row {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      .search-row .input-group {
+        min-width: 100%;
+      }
+      .search-row .btn-primary {
+        min-width: 100%;
+        margin-top: 0.5rem;
+      }
     }
     
     .mode-selector {
@@ -199,6 +210,20 @@
       font-weight: 600;
       margin-bottom: 0.3rem;
       color: #555;
+    }
+    .search-row {
+      display: flex;
+      gap: 1.2rem;
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+    .search-row .input-group {
+      min-width: 150px;
+    }
+    .search-row .btn-primary {
+      min-width: 120px;
+      height: 42px;
+      margin-top: 0;
     }
     .form-control {
       padding: 10px 14px;
@@ -632,15 +657,17 @@
               <label for="keywords">Keywords (Optional)</label>
               <input type="text" id="keywords" class="form-control" placeholder="Enter keywords to narrow search (e.g., neural networks, transformers, quantum)">
             </div>
-            <div class="input-group">
-              <label for="startDate">Start Date</label>
-              <input type="date" id="startDate" class="form-control">
+            <div class="search-row">
+              <div class="input-group">
+                <label for="startDate">Start Date</label>
+                <input type="date" id="startDate" class="form-control">
+              </div>
+              <div class="input-group">
+                <label for="endDate">End Date</label>
+                <input type="date" id="endDate" class="form-control">
+              </div>
+              <button class="btn-primary" id="searchBtn"><i class="fas fa-search"></i> Search</button>
             </div>
-            <div class="input-group">
-              <label for="endDate">End Date</label>
-              <input type="date" id="endDate" class="form-control">
-            </div>
-            <button class="btn-primary" id="searchBtn"><i class="fas fa-search"></i> Search</button>
           </div>
         </div>
         
