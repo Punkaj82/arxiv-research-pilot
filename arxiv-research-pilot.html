@@ -50,9 +50,21 @@
       padding: 32px 16px 64px 16px;
     }
     .header {
-      text-align: center;
       color: #fff;
       margin-bottom: 32px;
+    }
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .header-left {
+      text-align: left;
+    }
+    .header-right {
+      text-align: right;
     }
     .header h1 {
       font-size: 2.5rem;
@@ -65,6 +77,213 @@
       opacity: 0.9;
       margin-bottom: 0.5rem;
     }
+    .contact-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+          .contact-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.5);
+        transform: translateY(-2px);
+      }
+
+      /* Contact Modal Styles */
+      .contact-modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(5px);
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .contact-modal-content {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        max-width: 600px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        animation: modalSlideIn 0.3s ease-out;
+      }
+
+      @keyframes modalSlideIn {
+        from {
+          opacity: 0;
+          transform: translateY(-50px) scale(0.9);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      .contact-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 24px 24px 0 24px;
+        border-bottom: 1px solid #e9ecef;
+        margin-bottom: 20px;
+      }
+
+      .contact-modal-header h2 {
+        margin: 0;
+        color: #333;
+        font-size: 1.5rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: #666;
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 50%;
+        transition: all 0.2s;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .close-btn:hover {
+        background: #f8f9fa;
+        color: #333;
+      }
+
+      .contact-modal-body {
+        padding: 0 24px 24px 24px;
+      }
+
+      .contact-description {
+        color: #666;
+        margin-bottom: 24px;
+        line-height: 1.6;
+        font-size: 1rem;
+      }
+
+      .feedback-form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .form-group label {
+        font-weight: 600;
+        color: #333;
+        font-size: 0.95rem;
+      }
+
+      .form-group .form-control {
+        padding: 12px 16px;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+        font-family: inherit;
+      }
+
+      .form-group .form-control:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+
+      .form-group textarea.form-control {
+        resize: vertical;
+        min-height: 120px;
+      }
+
+      .form-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        margin-top: 8px;
+      }
+
+      .btn-secondary {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .btn-secondary:hover {
+        background: #5a6268;
+        transform: translateY(-1px);
+      }
+
+      /* Mobile Responsive */
+      @media (max-width: 768px) {
+        .header-content {
+          flex-direction: column;
+          text-align: center;
+          gap: 1rem;
+        }
+        
+        .header-left, .header-right {
+          text-align: center;
+        }
+        
+        .contact-modal {
+          padding: 10px;
+        }
+        
+        .contact-modal-content {
+          max-height: 95vh;
+        }
+        
+        .contact-modal-header {
+          padding: 20px 20px 0 20px;
+        }
+        
+        .contact-modal-body {
+          padding: 0 20px 20px 20px;
+        }
+        
+        .form-actions {
+          flex-direction: column;
+        }
+        
+        .btn-secondary, .btn-primary {
+          width: 100%;
+        }
+      }
     .main-layout {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -506,8 +725,17 @@
 <body>
   <div class="container">
     <div class="header">
-      <h1><i class="fas fa-rocket"></i> Arxiv Research Pilot</h1>
-      <div class="subtitle">Your all-in-one research paper explorer, presenter, and AI assistant</div>
+      <div class="header-content">
+        <div class="header-left">
+          <h1><i class="fas fa-rocket"></i> Arxiv Research Pilot</h1>
+          <div class="subtitle">Your all-in-one research paper explorer, presenter, and AI assistant</div>
+        </div>
+        <div class="header-right">
+          <button class="contact-btn" onclick="openContactModal()">
+            <i class="fas fa-envelope"></i> Contact Us
+          </button>
+        </div>
+      </div>
     </div>
     
     <div class="main-layout">
@@ -4057,6 +4285,126 @@ console.log('This would create a working application based on the research paper
         return { error: error.message };
       }
     }
+
+    // Contact Modal Functions
+    function openContactModal() {
+      document.getElementById('contactModal').style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeContactModal() {
+      document.getElementById('contactModal').style.display = 'none';
+      document.body.style.overflow = 'auto';
+    }
+
+    function submitFeedback() {
+      const name = document.getElementById('feedbackName').value.trim();
+      const email = document.getElementById('feedbackEmail').value.trim();
+      const feedback = document.getElementById('feedbackMessage').value.trim();
+      const category = document.getElementById('feedbackCategory').value;
+
+      if (!name || !email || !feedback) {
+        alert('Please fill in all required fields.');
+        return;
+      }
+
+      if (!isValidEmail(email)) {
+        alert('Please enter a valid email address.');
+        return;
+      }
+
+      // Show loading state
+      const submitBtn = document.getElementById('submitFeedbackBtn');
+      const originalText = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+      submitBtn.disabled = true;
+
+      // Simulate sending feedback (in a real app, you'd send to your server)
+      setTimeout(() => {
+        alert('Thank you for your feedback! We appreciate your input and will review it carefully.');
+        closeContactModal();
+        resetFeedbackForm();
+        
+        // Reset button
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+      }, 1500);
+    }
+
+    function resetFeedbackForm() {
+      document.getElementById('feedbackName').value = '';
+      document.getElementById('feedbackEmail').value = '';
+      document.getElementById('feedbackMessage').value = '';
+      document.getElementById('feedbackCategory').value = 'general';
+    }
+
+    function isValidEmail(email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      const modal = document.getElementById('contactModal');
+      if (event.target === modal) {
+        closeContactModal();
+      }
+    }
   </script>
+
+  <!-- Contact Modal -->
+  <div id="contactModal" class="contact-modal">
+    <div class="contact-modal-content">
+      <div class="contact-modal-header">
+        <h2><i class="fas fa-envelope"></i> Contact Us</h2>
+        <button class="close-btn" onclick="closeContactModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="contact-modal-body">
+        <p class="contact-description">
+          We'd love to hear your feedback! Share your thoughts on feature improvements, 
+          bug reports, or general suggestions to help us make Arxiv Research Pilot even better.
+        </p>
+        
+        <form class="feedback-form">
+          <div class="form-group">
+            <label for="feedbackName">Name *</label>
+            <input type="text" id="feedbackName" class="form-control" placeholder="Your name" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="feedbackEmail">Email *</label>
+            <input type="email" id="feedbackEmail" class="form-control" placeholder="your.email@example.com" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="feedbackCategory">Category</label>
+            <select id="feedbackCategory" class="form-control">
+              <option value="general">General Feedback</option>
+              <option value="feature">Feature Request</option>
+              <option value="bug">Bug Report</option>
+              <option value="improvement">Improvement Suggestion</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="feedbackMessage">Message *</label>
+            <textarea id="feedbackMessage" class="form-control" rows="6" 
+                      placeholder="Please share your feedback, suggestions, or any issues you've encountered..." required></textarea>
+          </div>
+          
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" onclick="closeContactModal()">Cancel</button>
+            <button type="button" class="btn-primary" id="submitFeedbackBtn" onclick="submitFeedback()">
+              <i class="fas fa-paper-plane"></i> Send Feedback
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 </body>
 </html> 
