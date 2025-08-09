@@ -1898,8 +1898,8 @@ const emailConfig = {
   }
 };
 
-// Create transporter
-const transporter = nodemailer.createTransporter(emailConfig);
+       // Create transporter
+       const transporter = nodemailer.createTransport(emailConfig);
 
 // Contact form endpoint
 app.post('/api/contact', async (req, res) => {
