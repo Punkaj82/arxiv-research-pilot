@@ -7,6 +7,7 @@ const cors = require('cors');
 const https = require('https');
 const http = require('http');
 const pdfParse = require('pdf-parse');
+const nodemailer = require('nodemailer');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -1881,6 +1882,107 @@ app.get('/api/classroom/:id', async (req, res) => {
   } catch (error) {
     console.error('Classroom mode error:', error);
     res.status(500).json({ error: 'Failed to generate classroom content' });
+  }
+});
+
+// ============================================================================
+// EMAIL FEEDBACK ENDPOINT
+// ============================================================================
+
+// Email configuration
+const emailConfig = {
+  service: 'gmail', // You can change this to your email provider
+  auth: {
+    user: process.env.EMAIL_USER || 'your-email@gmail.com', // Set this in environment variables
+    pass: process.env.EMAIL_PASS || 'your-app-password' // Set this in environment variables
+  }
+};
+
+// Create transporter
+const transporter = nodemailer.createTransporter(emailConfig);
+
+// Contact form endpoint
+app.post('/api/contact', async (req, res) => {
+  try {
+    const { name, email, category, message } = req.body;
+    
+    // Validate required fields
+    if (!name || !email || !message) {
+      return res.status(400).json({
+        success: false,
+        error: 'Name, email, and message are required'
+      });
+    }
+
+    // Email content
+    const mailOptions = {
+      from: emailConfig.auth.user,
+      to: 'pankaj@arxivresearch.com',
+      subject: `[Arxiv Research Pilot] ${category} - ${name}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 10px;">
+            New Feedback from Arxiv Research Pilot
+          </h2>
+          
+          <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="margin-top: 0; color: #333;">Feedback Details</h3>
+            <p><strong>Name:</strong> ${name}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Category:</strong> ${category}</p>
+            <p><strong>Message:</strong></p>
+            <div style="background: white; padding: 15px; border-radius: 5px; border-left: 4px solid #667eea;">
+              ${message.replace(/\n/g, '<br>')}
+            </div>
+          </div>
+          
+          <div style="background: #e8f4fd; padding: 15px; border-radius: 5px; border-left: 4px solid #17a2b8;">
+            <p style="margin: 0; color: #0c5460;">
+              <strong>Timestamp:</strong> ${new Date().toLocaleString()}<br>
+              <strong>User Agent:</strong> ${req.get('User-Agent') || 'Unknown'}
+            </p>
+          </div>
+          
+          <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
+          <p style="color: #666; font-size: 12px; text-align: center;">
+            This email was sent from the Arxiv Research Pilot contact form.
+          </p>
+        </div>
+      `,
+      text: `
+New Feedback from Arxiv Research Pilot
+
+Feedback Details:
+- Name: ${name}
+- Email: ${email}
+- Category: ${category}
+- Message: ${message}
+
+Timestamp: ${new Date().toLocaleString()}
+User Agent: ${req.get('User-Agent') || 'Unknown'}
+
+This email was sent from the Arxiv Research Pilot contact form.
+      `
+    };
+
+    // Send email
+    const info = await transporter.sendMail(mailOptions);
+    
+    console.log('Feedback email sent successfully:', info.messageId);
+    
+    res.json({
+      success: true,
+      message: 'Feedback sent successfully!',
+      messageId: info.messageId
+    });
+    
+  } catch (error) {
+    console.error('Error sending feedback email:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to send feedback email',
+      details: error.message
+    });
   }
 });
 

@@ -4297,7 +4297,7 @@ console.log('This would create a working application based on the research paper
       document.body.style.overflow = 'auto';
     }
 
-    function submitFeedback() {
+    async function submitFeedback() {
       const name = document.getElementById('feedbackName').value.trim();
       const email = document.getElementById('feedbackEmail').value.trim();
       const feedback = document.getElementById('feedbackMessage').value.trim();
@@ -4319,16 +4319,39 @@ console.log('This would create a working application based on the research paper
       submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
       submitBtn.disabled = true;
 
-      // Simulate sending feedback (in a real app, you'd send to your server)
-      setTimeout(() => {
-        alert('Thank you for your feedback! We appreciate your input and will review it carefully.');
-        closeContactModal();
-        resetFeedbackForm();
-        
+      try {
+        // Send feedback to server
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: name,
+            email: email,
+            category: category,
+            message: feedback
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          alert('Thank you for your feedback! We appreciate your input and will review it carefully.');
+          closeContactModal();
+          resetFeedbackForm();
+        } else {
+          alert('Sorry, there was an error sending your feedback. Please try again later.');
+          console.error('Feedback submission error:', result.error);
+        }
+      } catch (error) {
+        console.error('Network error:', error);
+        alert('Sorry, there was a network error. Please check your connection and try again.');
+      } finally {
         // Reset button
         submitBtn.innerHTML = originalText;
         submitBtn.disabled = false;
-      }, 1500);
+      }
     }
 
     function resetFeedbackForm() {
