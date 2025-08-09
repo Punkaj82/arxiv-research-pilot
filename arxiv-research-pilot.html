@@ -129,6 +129,18 @@
         min-width: 100%;
         margin-top: 0.5rem;
       }
+      .keywords-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+      .keywords-row {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      .keywords-row .input-group {
+        min-width: 100%;
+      }
     }
     
     .mode-selector {
@@ -224,6 +236,49 @@
       min-width: 120px;
       height: 42px;
       margin-top: 0;
+    }
+    .keywords-section {
+      margin-bottom: 1rem;
+    }
+    .keywords-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    .keywords-header label {
+      font-weight: 600;
+      color: #555;
+      margin: 0;
+    }
+    .keyword-logic {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+    .radio-label {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+    .radio-label input[type="radio"] {
+      margin: 0;
+      cursor: pointer;
+    }
+    .radio-label span {
+      color: #555;
+    }
+    .keywords-row {
+      display: flex;
+      gap: 1.2rem;
+      flex-wrap: wrap;
+    }
+    .keywords-row .input-group {
+      flex: 1;
+      min-width: 200px;
     }
     .form-control {
       padding: 10px 14px;
@@ -653,20 +708,41 @@
                 </optgroup>
               </select>
             </div>
-            <div class="input-group">
-              <label for="keywords">Keywords (Optional)</label>
-              <input type="text" id="keywords" class="form-control" placeholder="Enter keywords to narrow search (e.g., neural networks, transformers, quantum)">
+            <div class="keywords-section">
+              <div class="keywords-header">
+                <label>Keywords Search (Optional)</label>
+                <div class="keyword-logic">
+                  <label class="radio-label">
+                    <input type="radio" name="keywordLogic" value="OR" checked>
+                    <span>OR</span>
+                  </label>
+                  <label class="radio-label">
+                    <input type="radio" name="keywordLogic" value="AND">
+                    <span>AND</span>
+                  </label>
+                </div>
+              </div>
+              <div class="keywords-row">
+                <div class="input-group">
+                  <label for="keywords1">Keywords 1</label>
+                  <input type="text" id="keywords1" class="form-control" placeholder="Enter keywords (e.g., neural networks)">
+                </div>
+                <div class="input-group">
+                  <label for="keywords2">Keywords 2</label>
+                  <input type="text" id="keywords2" class="form-control" placeholder="Enter keywords (e.g., transformers)">
+                </div>
+              </div>
             </div>
             <div class="search-row">
-              <div class="input-group">
-                <label for="startDate">Start Date</label>
-                <input type="date" id="startDate" class="form-control">
-              </div>
-              <div class="input-group">
-                <label for="endDate">End Date</label>
-                <input type="date" id="endDate" class="form-control">
-              </div>
-              <button class="btn-primary" id="searchBtn"><i class="fas fa-search"></i> Search</button>
+            <div class="input-group">
+              <label for="startDate">Start Date</label>
+              <input type="date" id="startDate" class="form-control">
+            </div>
+            <div class="input-group">
+              <label for="endDate">End Date</label>
+              <input type="date" id="endDate" class="form-control">
+            </div>
+            <button class="btn-primary" id="searchBtn"><i class="fas fa-search"></i> Search</button>
             </div>
           </div>
         </div>
@@ -705,7 +781,9 @@
     // DOM elements
     const elements = {
       category: document.getElementById('category'),
-      keywords: document.getElementById('keywords'),
+      keywords1: document.getElementById('keywords1'),
+      keywords2: document.getElementById('keywords2'),
+      keywordLogic: document.querySelector('input[name="keywordLogic"]:checked'),
       startDate: document.getElementById('startDate'),
       endDate: document.getElementById('endDate'),
       searchBtn: document.getElementById('searchBtn'),
@@ -810,7 +888,9 @@
     // Search papers - Updated to use server API
     async function searchPapers() {
       const category = elements.category.value;
-      const keywords = elements.keywords.value.trim();
+      const keywords1 = elements.keywords1.value.trim();
+      const keywords2 = elements.keywords2.value.trim();
+      const keywordLogic = document.querySelector('input[name="keywordLogic"]:checked').value;
       const startDate = elements.startDate.value;
       const endDate = elements.endDate.value;
       
@@ -823,9 +903,23 @@
       elements.searchBtn.disabled = true;
       
       try {
+        // Build keywords parameter based on logic
+        let keywordsParam = '';
+        if (keywords1 && keywords2) {
+          if (keywordLogic === 'OR') {
+            keywordsParam = `${keywords1} ${keywords2}`;
+          } else { // AND
+            keywordsParam = `${keywords1} AND ${keywords2}`;
+          }
+        } else if (keywords1) {
+          keywordsParam = keywords1;
+        } else if (keywords2) {
+          keywordsParam = keywords2;
+        }
+        
         const params = new URLSearchParams({
           category: category,
-          ...(keywords && { keywords: keywords }),
+          ...(keywordsParam && { keywords: keywordsParam }),
           ...(startDate && { startDate: startDate.replace(/-/g, '') }),
           ...(endDate && { endDate: endDate.replace(/-/g, '') })
         });
@@ -1398,13 +1492,13 @@
               <div class="status-item">
                 <i class="fas fa-info-circle"></i>
                 <span>Ready to analyze: ${selectedPaper.title}</span>
-              </div>
-            </div>
+          </div>
+        </div>
           </div>
           
           <!-- AI Research Results -->
           <div class="ai-research-results" id="aiResearchResults">
-            <div class="results-placeholder">
+          <div class="results-placeholder">
               <i class="fas fa-robot"></i>
               <h3>AI Research Agent Ready</h3>
               <p>Click "Launch AI Research Agent" to start comprehensive analysis</p>
@@ -1412,15 +1506,15 @@
                 <div class="capability">
                   <i class="fas fa-search"></i>
                   <span>Find Related Research</span>
-                </div>
+          </div>
                 <div class="capability">
                   <i class="fas fa-square-root-alt"></i>
                   <span>Extract Mathematical Models</span>
-                </div>
+                  </div>
                 <div class="capability">
                   <i class="fas fa-calculator"></i>
                   <span>Discover Applications</span>
-                </div>
+                  </div>
                 <div class="capability">
                   <i class="fas fa-flask"></i>
                   <span>Find Research Projects</span>
@@ -1428,11 +1522,11 @@
                 <div class="capability">
                   <i class="fas fa-file-alt"></i>
                   <span>Generate Summary</span>
-                </div>
-              </div>
             </div>
           </div>
-        </div>
+          </div>
+                  </div>
+                  </div>
         
         <style>
           .ai-research-container {

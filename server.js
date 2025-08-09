@@ -1603,8 +1603,20 @@ app.get('/api/papers', async (req, res) => {
     
     // Add keywords to query if provided
     if (keywords && keywords.trim()) {
-      const keywordTerms = keywords.trim().split(/\s+/).map(term => `"${term}"`).join(' OR ');
-      query += ` AND (${keywordTerms})`;
+      // Check if keywords contain "AND" logic
+      if (keywords.includes(' AND ')) {
+        // Split by "AND" and process each part
+        const andParts = keywords.split(' AND ');
+        const processedParts = andParts.map(part => {
+          const terms = part.trim().split(/\s+/).map(term => `"${term}"`).join(' OR ');
+          return `(${terms})`;
+        });
+        query += ` AND ${processedParts.join(' AND ')}`;
+      } else {
+        // Default OR logic
+        const keywordTerms = keywords.trim().split(/\s+/).map(term => `"${term}"`).join(' OR ');
+        query += ` AND (${keywordTerms})`;
+      }
     }
     
     if (startDate && endDate) {
