@@ -1891,10 +1891,10 @@ app.get('/api/classroom/:id', async (req, res) => {
 
 // Email configuration
 const emailConfig = {
-  service: 'gmail', // You can change this to your email provider
+  service: process.env.EMAIL_SERVICE || 'gmail', // 'gmail', 'outlook', 'yahoo', etc.
   auth: {
     user: process.env.EMAIL_USER || 'your-email@gmail.com', // Set this in environment variables
-    pass: process.env.EMAIL_PASS || 'your-app-password' // Set this in environment variables
+    pass: process.env.EMAIL_PASS || 'your-password' // Set this in environment variables
   }
 };
 
@@ -1923,7 +1923,7 @@ app.post('/api/contact', async (req, res) => {
                // Email content
            const mailOptions = {
              from: emailConfig.auth.user,
-             to: 'infonovamind25@gmail.com',
+             to: 'pankaj@arxivresearch.com',
              subject: `[Arxiv Research Pilot] ${category} - ${name}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
